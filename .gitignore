@@ -1,0 +1,24 @@
+# WordPress
+wp-config.php
+wp-content/uploads/
+wp-content/debug.log
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Dependencies
+node_modules/
+vendor/
+
+# Build
+*.zip
+
+# Debug
+wp-content/mu-plugins/debug-gateways.php
