@@ -1,14 +1,14 @@
-=== QBitFlow for WooCommerce — Crypto Payments ===
+=== QBitFlow for WooCommerce ===
 Contributors: qbitflow
-Tags: crypto, cryptocurrency, payments, woocommerce, bitcoin, ethereum, solana, usdc, usdt, web3
+Tags: cryptocurrency, payments, ethereum, solana, web3
 Requires at least: 5.8
-Tested up to: 6.7
+Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 WC requires at least: 7.0
-WC tested up to: 9.6
-License: MPL-2.0
-License URI: https://opensource.org/licenses/MPL-2.0
+WC tested up to: 9.7
+License: GPL-2.0-or-later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Accept cryptocurrency payments in WooCommerce via QBitFlow. Non-custodial — funds go directly to your wallet via smart contracts.
 
@@ -21,11 +21,11 @@ Accept cryptocurrency payments in WooCommerce via QBitFlow. Non-custodial — fu
 * **Non-Custodial** — Funds go directly to your wallet via smart contracts
 * **Multiple Cryptocurrencies** — ETH, SOL, USDC, USDT, and more
 * **Block Checkout Support** — Works with both classic and block-based checkout
-* **Automatic Customer Sync** — Customer profiles synced to QBitFlow for analytics
+* **Automatic Customer Sync** — Buyer details (email, name, phone, billing address) sync to QBitFlow at checkout, so the QBitFlow page never re-prompts for what WooCommerce already has
 * **Invoice & Management Pages** — Hosted payment details pages for customers
-* **Webhook Verified** — Secure server-to-server payment confirmation
+* **Webhook Verified** — Server-to-server payment confirmation with HMAC signature verification
 * **Real-time Order Updates** — Order status updates automatically on payment
-* **Refund Support** — Mark refunds in WooCommerce (manual crypto refund via the QBitFlow dashboard)
+* **Refunds, end-to-end** — Pending refund requests surface as an admin notice; once you approve a refund on the QBitFlow dashboard and the on-chain refund settles, the WooCommerce order is auto-marked **Refunded** with the refund tx hash recorded
 * **Test Mode** — Try the full payment flow without spending any real cryptocurrency
 * **Debug Logging** — Built-in logging for troubleshooting
 
@@ -57,7 +57,7 @@ For more details, see the [QBitFlow Test Mode Documentation](https://qbitflow.ap
 
 == Installation ==
 
-1. Upload the `qbitflow-woocommerce` folder to `/wp-content/plugins/`
+1. Upload the `qbitflow-for-woocommerce` folder to `/wp-content/plugins/`
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Go to WooCommerce → Settings → Payments → QBitFlow
 4. Enter your API key from your [QBitFlow dashboard](https://qbitflow.app)
@@ -83,7 +83,7 @@ Yes. The plugin supports both the classic shortcode checkout and the new WooComm
 
 = How are refunds handled? =
 
-Refunds are marked in WooCommerce but must be processed manually from your QBitFlow dashboard, as blockchain transactions are irreversible. When you initiate a refund in WooCommerce, you'll be directed to the QBitFlow dashboard to complete it.
+Customers request a refund from their QBitFlow invoice page; you approve or refuse it in the QBitFlow dashboard. Once you approve a refund and the on-chain refund settles, the WooCommerce order is automatically marked **Refunded** with a note recording the refund transaction hash. While a request is still pending, an admin notice keeps it on your radar with a one-click link to the QBitFlow refund queue. Only full refunds are supported (blockchain transactions are irreversible, so partial refunds aren't applicable).
 
 = Can I test the plugin without real payments? =
 
@@ -95,12 +95,32 @@ Test API keys will not process real transactions. Make sure to replace your test
 
 == Screenshots ==
 
-1. Checkout with QBitFlow payment option (screenshots/payment-page.png)
-2. QBitFlow payment page (screenshots/checkout-page.png)
-3. Admin order page with payment details (screenshots/admin-order-page.png)
-4. Plugin settings page (screenshots/plugin-settings-page.png)
+1. Customers select QBitFlow as the payment method at checkout
+2. Order received page after a successful crypto payment
+3. Admin order view with the QBitFlow payment block (status, tx hash, customer, invoice link)
+4. Pending refund request shown directly in the order meta box
+5. Once the refund is approved and settled on-chain, the order is auto-marked Refunded
+6. Plugin settings (API key, debug logging) under WooCommerce → Settings → Payments
 
 == Changelog ==
+
+= 1.1.0 =
+* Customer sync — find-or-create on QBitFlow at checkout (`GET /customer/email/{email}` first, `POST /customer` only when missing) so the QBitFlow checkout never re-prompts the buyer for details WooCommerce already has
+* Customer identity is now keyed on the order's billing email (not the WP account), backed by a persistent email → UUID map; the same WP user placing two orders with two different emails resolves to two distinct QBitFlow customers
+* Customer billing address is synced to QBitFlow as a single string (street, city, state, postal code, country)
+* Refunds end-to-end — admin notice for pending refunds (live, no cache); refund block on the order meta box shows status, reason, merchantMessage, refund tx hash, respondedAt; once approved on-chain the order is auto-marked **Refunded** with the refund tx hash recorded as an order note
+* Refund snapshots persisted on the order once the refund reaches a terminal state (approved/refused/failed); pending refunds keep refetching live
+* Updated payment session endpoint to `/transaction/session-checkout/new/payment`; fixed `customerUUID` field casing
+* Fixed undefined variable bug in webhook handler for stock reduction
+* Fixed potential fatal error when cart is unavailable during REST webhook processing
+* `uninstall.php` cleans up plugin options, the email → UUID map, and the legacy customer-uuid user meta on deletion
+* Standardised license to GPL-2.0-or-later across LICENSE, plugin header, readme, and README (required for WordPress.org)
+* Plugin header `Tested up to: 6.9` and `WC tested up to: 9.7` (in sync with readme)
+* Added translation template (`languages/qbitflow-for-woocommerce.pot`)
+* Added WordPress.org directory assets (banners, icons, listing screenshots)
+* Documented webhook `permission_callback` auth model with inline comment
+* Plugin Check pass: translators comments on every placeholder, escape-output on the plain-text email branch, refactored webhook order lookup to `meta_query`; remaining structural warnings annotated with justified `phpcs:ignore` comments
+* Plugin slug renamed to `qbitflow-for-woocommerce` to comply with the WordPress.org trademark policy (settings option name and gateway ID unchanged, so existing installs preserve their API key and order history)
 
 = 1.0.0 =
 * Initial release
@@ -114,6 +134,9 @@ Test API keys will not process real transactions. Make sure to replace your test
 * Test mode support
 
 == Upgrade Notice ==
+
+= 1.1.0 =
+API compatibility updates, automatic refund completion in WooCommerce, and a per-email customer model so two orders with two different emails resolve to distinct QBitFlow customers. Recommended for all users.
 
 = 1.0.0 =
 Initial release.
