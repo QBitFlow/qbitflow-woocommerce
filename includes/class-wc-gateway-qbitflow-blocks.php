@@ -71,7 +71,7 @@ class WC_Gateway_QBitFlow_Blocks extends AbstractPaymentMethodType
 	public function get_payment_method_data()
 	{
 		return array(
-			'title'       => $this->gateway ? $this->gateway->get_title() : __('Pay with Crypto', 'qbitflow-woocommerce'),
+			'title'       => $this->gateway ? $this->gateway->get_title() : __('Pay with Crypto', 'qbitflow-for-woocommerce'),
 			'description' => $this->gateway ? $this->gateway->get_description() : '',
 			'icon'        => QBITFLOW_WC_PLUGIN_URL . 'assets/img/qbitflow-icon.png',
 			'supports'    => $this->gateway ? array_filter($this->gateway->supports, array(

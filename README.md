@@ -1,7 +1,7 @@
 # QBitFlow for WooCommerce
 
-[![WordPress Plugin Version](https://img.shields.io/wordpress/plugin/v/qbitflow-woocommerce)](https://wordpress.org/plugins/qbitflow-woocommerce/)
-[![License: MPL-2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
+[![WordPress Plugin Version](https://img.shields.io/wordpress/plugin/v/qbitflow-for-woocommerce)](https://wordpress.org/plugins/qbitflow-for-woocommerce/)
+[![License: GPL-2.0-or-later](https://img.shields.io/badge/License-GPL%20v2%2B-blue.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
 [![WooCommerce](https://img.shields.io/badge/WooCommerce-7.0%2B-purple.svg)](https://woocommerce.com/)
 
 Accept cryptocurrency payments in your WooCommerce store via [QBitFlow](https://qbitflow.app). Non-custodial — funds go directly to your wallet via smart contracts.
@@ -25,16 +25,16 @@ Accept cryptocurrency payments in your WooCommerce store via [QBitFlow](https://
 3. Click **Install Now** → **Activate**
 
 ### Manual Installation
-1. Download the latest release from [Releases](https://github.com/QBitFlow/qbitflow-woocommerce/releases)
+1. Download the latest release from [Releases](https://github.com/QBitFlow/qbitflow-for-woocommerce/releases)
 2. Upload to `/wp-content/plugins/`
 3. Activate in WordPress admin
 
 ### From Source
 ```bash
-git clone https://github.com/QBitFlow/qbitflow-woocommerce.git
-cd qbitflow-woocommerce
+git clone https://github.com/QBitFlow/qbitflow-for-woocommerce.git
+cd qbitflow-for-woocommerce
 # Copy to your WordPress plugins directory
-cp -r . /path/to/wordpress/wp-content/plugins/qbitflow-woocommerce
+cp -r . /path/to/wordpress/wp-content/plugins/qbitflow-for-woocommerce
 ```
 
 ## Configuration
@@ -86,11 +86,11 @@ Customer checkout → QBitFlow payment page → On-chain payment → Webhook →
 ### Local Setup with Docker
 
 ```bash
-git clone https://github.com/QBitFlow/qbitflow-woocommerce.git
-cd qbitflow-woocommerce
+git clone https://github.com/QBitFlow/qbitflow-for-woocommerce.git
+cd qbitflow-for-woocommerce
 
 # Create a Docker WordPress environment
-# Mount the plugin directory to wp-content/plugins/qbitflow-woocommerce
+# Mount the plugin directory to wp-content/plugins/qbitflow-for-woocommerce
 ```
 
 ### Debug Logging
@@ -99,12 +99,14 @@ Enable in **WooCommerce → Settings → Payments → QBitFlow → Debug Log**
 
 Logs are written to: `WooCommerce → Status → Logs → qbitflow`
 
-# Screenshots
+## Screenshots
 
-1. [Checkout with QBitFlow payment option](screenshots/payment-page.png)
-2. [QBitFlow payment page](screenshots/checkout-page.png)
-3. [Admin order page with payment details](screenshots/admin-order-page.png)
-4. [Plugin settings page](screenshots/plugin-settings-page.png)
+1. [Customers select QBitFlow at checkout](screenshots/checkout.png)
+2. [Order received page after a successful crypto payment](screenshots/order-received.png)
+3. [Admin order view with the QBitFlow payment block](screenshots/wc-order.png)
+4. [Pending refund request shown directly in the order meta box](screenshots/wc-order-with-refund-request.png)
+5. [Order auto-marked Refunded once the refund settles on-chain](screenshots/wc-order-with-refund-accepted.png)
+6. [Plugin settings (API key, debug logging)](screenshots/plugin-settings.png)
 
 ## Contributing
 
@@ -112,10 +114,10 @@ Contributions are welcome! Please open an issue or submit a pull request.
 
 ## License
 
-[MPL-2.0](LICENSE)
+[GPL-2.0-or-later](LICENSE)
 
 ## Support
 
 - 📖 [Documentation](https://qbitflow.app/docs)
 - 📧 [Email Support](mailto:support@qbitflow.app)
-- 🐛 [Issue Tracker](https://github.com/QBitFlow/qbitflow-woocommerce/issues)
+- 🐛 [Issue Tracker](https://github.com/QBitFlow/qbitflow-for-woocommerce/issues)
