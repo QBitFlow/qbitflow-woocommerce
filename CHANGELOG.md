@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.1] - 2026-07-23
+
+### Added
+- `Requires Plugins: woocommerce` header so WordPress enforces the WooCommerce dependency before the plugin can be activated (WP 6.5+)
+- `build.sh` + `.distignore` build pipeline that produces a clean distributable ZIP from a single source of truth
+
+### Changed
+- The checkout payment method description is now an editable **Description** setting (default: "Pay with crypto — funds go straight to your wallet, non-custodial and secure.") instead of a hardcoded string
+
+### Removed
+- Directory assets and development-only files (`.wordpress-org/`, raw `screenshots/`, dev docs) are no longer included in the distributed plugin ZIP
+
 ## [1.1.0] - 2026-05-08
 
 ### Added
@@ -24,7 +36,7 @@ All notable changes to this project will be documented in this file.
 - `uninstall.php` to clean up plugin options and user meta on deletion
 - `languages/qbitflow-for-woocommerce.pot` translation template
 - `.wordpress-org/` directory assets (banners, icons, and 6 listing screenshots)
-- `Tested up to: 6.9` to plugin header
+- `Tested up to: 7.0` to plugin header
 - Inline comment on the webhook `permission_callback` documenting that signature verification is the auth boundary
 - Plugin Check pass — all errors resolved (translators comments on every placeholder, escape-output on the plain-text email branch, refactored webhook order lookup to `meta_query`); remaining structural warnings annotated with justified `phpcs:ignore` comments
 

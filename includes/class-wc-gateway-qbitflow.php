@@ -33,7 +33,7 @@ class WC_Gateway_QBitFlow extends WC_Payment_Gateway
 		$this->init_settings();
 
 		$this->title       = "QBitFlow";
-		$this->description = "Pay with cryptocurrency (ETH, SOL, USDC, USDT, and more). Powered by QBitFlow — non-custodial, secure, instant.";
+		$this->description = $this->get_option('description');
 		$this->enabled     = $this->get_option('enabled');
 
 		// Save settings
@@ -72,6 +72,13 @@ class WC_Gateway_QBitFlow extends WC_Payment_Gateway
 				'type'    => 'checkbox',
 				'label'   => __('Enable QBitFlow Crypto Payments', 'qbitflow-for-woocommerce'),
 				'default' => 'no',
+			),
+			'description'    => array(
+				'title'       => __('Description', 'qbitflow-for-woocommerce'),
+				'type'        => 'textarea',
+				'description' => __('The payment method description shown to customers at checkout.', 'qbitflow-for-woocommerce'),
+				'default'     => __('Pay with crypto — funds go straight to your wallet, non-custodial and secure.', 'qbitflow-for-woocommerce'),
+				'desc_tip'    => true,
 			),
 			'api_key'        => array(
 				'title'       => __('API Key', 'qbitflow-for-woocommerce'),
