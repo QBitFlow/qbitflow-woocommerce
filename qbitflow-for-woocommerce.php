@@ -4,14 +4,15 @@
  * Plugin Name: QBitFlow for WooCommerce
  * Plugin URI: https://qbitflow.app
  * Description: Accept cryptocurrency payments in WooCommerce via QBitFlow. Non-custodial — funds go directly to your wallet.
- * Version: 1.1.0
+ * Version: 1.1.1
  * Author: QBitFlow
  * License: GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: qbitflow-for-woocommerce
  * Requires at least: 5.8
- * Tested up to: 6.9
+ * Tested up to: 7.0
  * Requires PHP: 7.4
+ * Requires Plugins: woocommerce
  * WC requires at least: 7.0
  * WC tested up to: 9.7
  */
@@ -20,7 +21,7 @@ if (! defined('ABSPATH')) {
 	exit;
 }
 
-define('QBITFLOW_WC_VERSION', '1.1.0');
+define('QBITFLOW_WC_VERSION', '1.1.1');
 define('QBITFLOW_WC_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('QBITFLOW_WC_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('QBITFLOW_WC_API_BASE', 'https://api.qbitflow.app/v1');
