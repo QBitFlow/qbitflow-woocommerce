@@ -2,9 +2,9 @@
 Contributors: qbitflow
 Tags: cryptocurrency, payments, ethereum, solana, web3
 Requires at least: 5.8
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 WC requires at least: 7.0
 WC tested up to: 9.7
 License: GPL-2.0-or-later
@@ -104,6 +104,11 @@ Test API keys will not process real transactions. Make sure to replace your test
 
 == Changelog ==
 
+= 1.1.1 =
+* Added the `Requires Plugins: woocommerce` header so WordPress enforces the WooCommerce dependency before activation
+* The checkout payment method description is now an editable setting (Description field) instead of a hardcoded string
+* Distributed ZIP no longer includes directory assets or development-only files (`.wordpress-org`, raw screenshots, dev docs); added a `build.sh`/`.distignore` build pipeline
+
 = 1.1.0 =
 * Customer sync — find-or-create on QBitFlow at checkout (`GET /customer/email/{email}` first, `POST /customer` only when missing) so the QBitFlow checkout never re-prompts the buyer for details WooCommerce already has
 * Customer identity is now keyed on the order's billing email (not the WP account), backed by a persistent email → UUID map; the same WP user placing two orders with two different emails resolves to two distinct QBitFlow customers
@@ -115,7 +120,7 @@ Test API keys will not process real transactions. Make sure to replace your test
 * Fixed potential fatal error when cart is unavailable during REST webhook processing
 * `uninstall.php` cleans up plugin options, the email → UUID map, and the legacy customer-uuid user meta on deletion
 * Standardised license to GPL-2.0-or-later across LICENSE, plugin header, readme, and README (required for WordPress.org)
-* Plugin header `Tested up to: 6.9` and `WC tested up to: 9.7` (in sync with readme)
+* Plugin header `Tested up to: 7.0` and `WC tested up to: 9.7` (in sync with readme)
 * Added translation template (`languages/qbitflow-for-woocommerce.pot`)
 * Added WordPress.org directory assets (banners, icons, listing screenshots)
 * Documented webhook `permission_callback` auth model with inline comment
@@ -134,6 +139,9 @@ Test API keys will not process real transactions. Make sure to replace your test
 * Test mode support
 
 == Upgrade Notice ==
+
+= 1.1.1 =
+Adds the WooCommerce dependency header, makes the checkout description editable, and ships a cleaner plugin package. Recommended for all users.
 
 = 1.1.0 =
 API compatibility updates, automatic refund completion in WooCommerce, and a per-email customer model so two orders with two different emails resolve to distinct QBitFlow customers. Recommended for all users.
