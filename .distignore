@@ -1,0 +1,24 @@
+# Files and folders excluded from the distributed plugin ZIP.
+# These live in the repo (and, for directory assets, in SVN /assets/) but
+# must not ship inside the plugin itself.
+
+# Directory assets — belong in WP.org SVN /assets/, not the plugin
+.wordpress-org
+
+# Version control & editor cruft
+.git
+.gitignore
+.DS_Store
+.idea
+.vscode
+
+# Dev-only docs (readme.txt is the shipped WP.org readme)
+README.md
+CHANGELOG.md
+
+# Raw source screenshots (listing screenshots live in SVN /assets/)
+screenshots
+
+# Build tooling
+build.sh
+.distignore
