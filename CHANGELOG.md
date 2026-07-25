@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.2] - 2026-07-25
+
+### Added
+- Test/Live mode badge on the settings screen, derived from the API key format (`sk_<id>_<live|test>_<secret>`), with a note that test mode runs on blockchain testnets using faucet funds (no real cryptocurrency spent)
+- Webhook registration reminder on the settings screen showing the store's webhook URL and pointing to the matching Test/Live section in the QBitFlow dashboard
+- "External services" section in the readme documenting the QBitFlow API: what data is sent and when, plus Terms of Service and Privacy Policy links (WordPress.org requirement)
+- Explicit, nonce-protected, capability-gated (`edit_shop_orders`) `admin_post_qbitflow_apply_refund` handler that mirrors an approved on-chain refund into WooCommerce (creates the full refund via `wc_create_refund()`, marks the order Refunded, records the refund tx hash, and adds an order note)
+- "Sync refund to WooCommerce" button, rendered as an admin notice at the top of the order screen, shown only when QBitFlow reports a settled refund WooCommerce hasn't recorded yet; the QBitFlow meta box always shows the current refund status
+
+### Changed
+- The admin order screen refund sync is now strictly read-only — no order meta is written and no WooCommerce refund is created on page load (previously done on a GET request without a nonce). All state changes now require the explicit sync action
+- Refund status lookups on the order screen are cached in a short-lived transient to avoid repeated API calls on screen refreshes
+
 ## [1.1.1] - 2026-07-23
 
 ### Added

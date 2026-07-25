@@ -4,7 +4,7 @@
  * Plugin Name: QBitFlow for WooCommerce
  * Plugin URI: https://qbitflow.app
  * Description: Accept cryptocurrency payments in WooCommerce via QBitFlow. Non-custodial — funds go directly to your wallet.
- * Version: 1.1.1
+ * Version: 1.1.2
  * Author: QBitFlow
  * License: GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -21,7 +21,7 @@ if (! defined('ABSPATH')) {
 	exit;
 }
 
-define('QBITFLOW_WC_VERSION', '1.1.1');
+define('QBITFLOW_WC_VERSION', '1.1.2');
 define('QBITFLOW_WC_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('QBITFLOW_WC_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('QBITFLOW_WC_API_BASE', 'https://api.qbitflow.app/v1');
@@ -86,6 +86,30 @@ function qbitflow_wc_init()
 
 	// Admin notice for pending refund requests
 	add_action('admin_notices', 'qbitflow_wc_pending_refunds_notice');
+
+	// Refund sync handler. Registered here (not in the gateway constructor)
+	// because WooCommerce does not instantiate payment gateways on an
+	// admin-post.php request, so a constructor hook would never fire there.
+	add_action('admin_post_qbitflow_apply_refund', 'qbitflow_wc_handle_apply_refund');
+}
+
+/**
+ * Bridge the admin-post refund-sync action to the gateway instance.
+ *
+ * Resolves the live WC_Gateway_QBitFlow instance from WooCommerce (which builds
+ * it here on demand) and defers to its nonce/capability-checked handler.
+ */
+function qbitflow_wc_handle_apply_refund()
+{
+	$gateways = (function_exists('WC') && WC()->payment_gateways())
+		? WC()->payment_gateways()->payment_gateways()
+		: array();
+
+	if (empty($gateways['qbitflow']) || ! method_exists($gateways['qbitflow'], 'handle_apply_refund')) {
+		wp_die(esc_html__('QBitFlow gateway is not available.', 'qbitflow-for-woocommerce'));
+	}
+
+	$gateways['qbitflow']->handle_apply_refund();
 }
 
 /**
@@ -110,9 +134,17 @@ function qbitflow_wc_handle_webhook(WP_REST_Request $request)
 	$payload   = $request->get_body();
 	$signature = $request->get_header('X-Webhook-Signature-256');
 	$timestamp = $request->get_header('X-Webhook-Timestamp');
+	$webhook_id = $request->get_header('X-Webhook-ID');
 
 	if (empty($timestamp)) {
 		return new WP_REST_Response(array('error' => 'Invalid timestamp'), 400);
+	}
+
+	// Reachability check from the dashboard "Test the endpoint" action.
+	// The test probe sends a fake payload — acknowledge it and skip processing.
+	if ($webhook_id === "test-webhook-id") {
+		// Test webhook: always accept, no signature verification.
+		return new WP_REST_Response(array('received' => true), 200);
 	}
 
 	if (! QBitFlow_API::verify_webhook_signature($payload, $signature, $timestamp)) {
