@@ -54,11 +54,20 @@ class WC_Gateway_QBitFlow extends WC_Payment_Gateway
 
 		add_action('add_meta_boxes', array($this, 'add_order_meta_box'));
 
-		// Refund handling lives on QBitFlow, so on every order edit screen we
-		// pull the latest refund record and — when it's been approved on-chain —
-		// auto-create the matching WC refund so the order header shows
-		// "Refunded" without the merchant having to do a manual entry.
+		// Refund handling lives on QBitFlow. On every order edit screen we pull
+		// the latest refund record (read-only, cached) so the meta box can show
+		// its status and surface a "sync" action when QBitFlow has settled a
+		// refund on-chain that WooCommerce hasn't recorded yet. No state change
+		// happens on this GET — see handle_apply_refund() for the mutation path.
 		add_action('current_screen', array($this, 'sync_refund_on_order_screen'));
+
+		// Order-screen notices: the "sync this refund" prompt (rendered outside
+		// the order form so its POST button isn't swallowed by a nested form) and
+		// the one-time success notice after a sync. The actual state change runs
+		// in handle_apply_refund(), registered at plugin init on admin_post — not
+		// here, because WooCommerce doesn't build gateways on admin-post.php.
+		add_action('admin_notices', array($this, 'maybe_show_refund_sync_prompt'));
+		add_action('admin_notices', array($this, 'maybe_show_refund_synced_notice'));
 	}
 
 	/**
@@ -113,6 +122,87 @@ class WC_Gateway_QBitFlow extends WC_Payment_Gateway
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * Derive the environment from the configured API key.
+	 *
+	 * Keys are formatted `sk_<id>_<live|test>_<secret>`, so the mode is the
+	 * third underscore-separated segment. Returns 'live', 'test', or '' when
+	 * no key is set or the format isn't recognised.
+	 */
+	private function get_api_mode()
+	{
+		$key = (string) $this->get_option('api_key');
+		if ('' === $key) {
+			return '';
+		}
+		$parts = explode('_', $key);
+		$mode  = $parts[2] ?? '';
+		return in_array($mode, array('live', 'test'), true) ? $mode : '';
+	}
+
+	/**
+	 * Render the settings screen with a test/live mode badge and a webhook
+	 * registration reminder above the standard WooCommerce settings table.
+	 */
+	public function admin_options()
+	{
+		$mode        = $this->get_api_mode();
+		$webhook_url = rest_url('qbitflow-wc/webhook');
+
+		echo '<h2>' . esc_html__('QBitFlow', 'qbitflow-for-woocommerce') . '</h2>';
+
+		// Mode badge — tells the merchant at a glance which environment their
+		// current API key targets.
+		if ('test' === $mode) {
+			echo '<p style="font-size:13px">';
+			echo '<span style="display:inline-block;padding:3px 10px;border-radius:3px;background:#f0b849;color:#1d2327;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;vertical-align:middle">' .
+				esc_html__('Test mode', 'qbitflow-for-woocommerce') . '</span> ';
+			echo esc_html__('Your API key is a test key. Payments run on blockchain testnets using faucet funds, so you can try the entire payment flow without spending any real cryptocurrency. Swap in a live key when you are ready to accept real payments.', 'qbitflow-for-woocommerce');
+			echo '</p>';
+		} elseif ('live' === $mode) {
+			echo '<p style="font-size:13px">';
+			echo '<span style="display:inline-block;padding:3px 10px;border-radius:3px;background:#28a745;color:#fff;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;vertical-align:middle">' .
+				esc_html__('Live mode', 'qbitflow-for-woocommerce') . '</span> ';
+			echo esc_html__('Your API key is a live key — real cryptocurrency payments are processed.', 'qbitflow-for-woocommerce');
+			echo '</p>';
+		} elseif ('' !== (string) $this->get_option('api_key')) {
+			echo '<p style="font-size:13px">';
+			echo '<span style="display:inline-block;padding:3px 10px;border-radius:3px;background:#dc3545;color:#fff;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;vertical-align:middle">' .
+				esc_html__('Unknown key', 'qbitflow-for-woocommerce') . '</span> ';
+			echo esc_html__('The API key format is not recognised. Copy the key again from your QBitFlow dashboard.', 'qbitflow-for-woocommerce');
+			echo '</p>';
+		} else {
+			echo '<p style="font-size:13px">';
+			echo '<span style="display:inline-block;padding:3px 10px;border-radius:3px;background:#6c757d;color:#fff;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;vertical-align:middle">' .
+				esc_html__('No API key', 'qbitflow-for-woocommerce') . '</span> ';
+			echo esc_html__('Enter your QBitFlow API key below to enable payments.', 'qbitflow-for-woocommerce');
+			echo '</p>';
+		}
+
+		// Webhook registration reminder. The dashboard has separate Test and
+		// Live webhook sections, so point the merchant to the one matching their
+		// key (defaulting to Test when the key isn't a live key).
+		$section = 'live' === $mode
+			? __('Live', 'qbitflow-for-woocommerce')
+			: __('Test', 'qbitflow-for-woocommerce');
+
+		echo '<div class="notice notice-info inline" style="margin:12px 0;padding:10px 12px">';
+		echo '<p style="margin:0 0 6px"><strong>' . esc_html__('Don\'t forget to register your webhook', 'qbitflow-for-woocommerce') . '</strong></p>';
+		echo '<p style="margin:0 0 6px">';
+		printf(
+			/* translators: %s: the QBitFlow dashboard webhook section (Test or Live) matching the API key */
+			esc_html__('Add the URL below in your QBitFlow dashboard under Settings → Webhooks → %s section, so payment confirmations reach your store:', 'qbitflow-for-woocommerce'),
+			esc_html($section)
+		);
+		echo '</p>';
+		echo '<p style="margin:0"><code style="user-select:all;word-break:break-all">' . esc_html($webhook_url) . '</code></p>';
+		echo '</div>';
+
+		echo '<table class="form-table">';
+		$this->generate_settings_html();
+		echo '</table>';
 	}
 
 	/**
@@ -359,26 +449,48 @@ class WC_Gateway_QBitFlow extends WC_Payment_Gateway
 	/**
 	 * Per-request store of refund records keyed by order ID. Filled by
 	 * sync_refund_on_order_screen() so render_order_meta_box() doesn't have to
-	 * re-call the API. Not persisted anywhere — the user wants every page
-	 * load to reflect the live state on QBitFlow.
+	 * re-fetch. The underlying lookup is transient-cached (see get_refund_cached).
 	 *
 	 * @var array<int,array|null>
 	 */
 	private static $refund_request_cache = array();
 
 	/**
-	 * Fetch the latest refund record for the order being viewed and, when the
-	 * refund has been approved on-chain, auto-create the matching WC refund
-	 * so the order's header status flips to "refunded".
+	 * Per-request store of "does QBitFlow report a settled refund that WC hasn't
+	 * recorded yet?" keyed by order ID. Filled by sync_refund_on_order_screen()
+	 * so render_refund_section() can surface the sync action without re-deriving.
 	 *
-	 * Hooked to `current_screen` so it runs once per admin page load, before
-	 * meta boxes render. Pending refunds always refetch; terminal refunds
-	 * (approved/refused/failed) are immutable so we snapshot them on the
-	 * order and stop hitting the API.
+	 * @var array<int,bool>
+	 */
+	private static $refund_needs_sync = array();
+
+	/**
+	 * ID of the order currently being viewed on an admin order screen, captured
+	 * by sync_refund_on_order_screen() so admin_notices callbacks (which run
+	 * later in the page render) know which order to act on. 0 when not on one.
+	 *
+	 * @var int
+	 */
+	private static $screen_order_id = 0;
+
+	/**
+	 * On the admin order screen, load the latest refund record for display.
+	 *
+	 * READ-ONLY. Hooked to `current_screen` so it runs once per admin page load,
+	 * before meta boxes render. It fetches (via a short-lived transient cache)
+	 * the current refund state so the meta box can show it, and computes whether
+	 * QBitFlow has settled a refund on-chain that WooCommerce hasn't mirrored
+	 * yet. It never writes order meta and never creates a WC refund — that only
+	 * happens through the explicit, nonce-protected handle_apply_refund().
 	 */
 	public function sync_refund_on_order_screen($screen)
 	{
 		if (! $screen instanceof WP_Screen || ! is_admin()) {
+			return;
+		}
+
+		// Only merchants who can edit orders should trigger the refund lookup.
+		if (! current_user_can('edit_shop_orders')) {
 			return;
 		}
 
@@ -390,7 +502,9 @@ class WC_Gateway_QBitFlow extends WC_Payment_Gateway
 			return;
 		}
 
-		// Classic: ?post=123. HPOS: ?id=123 on the WC orders page.
+		// Classic: ?post=123. HPOS: ?id=123 on the WC orders page. This only
+		// identifies which order screen WordPress core is already rendering; it
+		// triggers no state change, so no nonce applies.
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only screen detection (which order page is being viewed). No state changes triggered by this read.
 		$order_id = absint($_GET['post'] ?? $_GET['id'] ?? 0);
 		if (! $order_id) {
@@ -402,35 +516,59 @@ class WC_Gateway_QBitFlow extends WC_Payment_Gateway
 			return;
 		}
 
-		// Already snapshotted in a terminal state? That state is immutable —
-		// reuse it without touching the API.
-		$snapshot = $order->get_meta(self::$meta_key_refund_snapshot);
-		if ($snapshot) {
-			$decoded = json_decode((string) $snapshot, true);
-			if (is_array($decoded) && self::is_terminal_refund_status($decoded['status'] ?? '')) {
-				self::$refund_request_cache[$order->get_id()] = $decoded;
-				$this->maybe_complete_wc_refund($order, $decoded);
-				return;
-			}
-		}
-
 		$session_uuid = $order->get_meta(self::$meta_key_session_uuid);
 		if (! $session_uuid) {
 			return;
 		}
 
-		$refund = QBitFlow_API::get_refund_by_transaction($session_uuid);
-		self::$refund_request_cache[$order->get_id()] = is_array($refund) ? $refund : null;
+		self::$screen_order_id = $order->get_id();
 
-		if (is_array($refund)) {
-			// Persist the snapshot once the refund reaches a terminal state so
-			// subsequent admin views don't refetch it. Pending stays live.
-			if (self::is_terminal_refund_status($refund['status'] ?? '')) {
-				$order->update_meta_data(self::$meta_key_refund_snapshot, wp_json_encode($refund));
-				$order->save();
-			}
-			$this->maybe_complete_wc_refund($order, $refund);
+		$refund = self::get_refund_cached($session_uuid);
+		self::$refund_request_cache[$order->get_id()] = is_array($refund) ? $refund : null;
+		self::$refund_needs_sync[$order->get_id()]    = is_array($refund)
+			? $this->refund_needs_sync($order, $refund)
+			: false;
+	}
+
+	/**
+	 * Fetch a refund record for a transaction, cached in a short-lived transient
+	 * so repeated admin screen refreshes don't hammer the API.
+	 *
+	 * Caches negative lookups too (as a sentinel) to avoid refetch storms while
+	 * a refund hasn't been requested. TTL is deliberately short so a freshly
+	 * settled refund surfaces within a minute.
+	 *
+	 * @return array|null The refund record, or null when none exists.
+	 */
+	private static function get_refund_cached($session_uuid)
+	{
+		$key    = 'qbitflow_refund_' . md5((string) $session_uuid);
+		$cached = get_transient($key);
+
+		if ($cached !== false) {
+			return is_array($cached) ? $cached : null;
 		}
+
+		$refund = QBitFlow_API::get_refund_by_transaction($session_uuid);
+		$value  = is_array($refund) ? $refund : 'none';
+		set_transient($key, $value, MINUTE_IN_SECONDS);
+
+		return is_array($refund) ? $refund : null;
+	}
+
+	/**
+	 * Whether QBitFlow reports a completed refund (approved + on-chain txHash)
+	 * that WooCommerce hasn't mirrored yet. Pure read — no side effects.
+	 */
+	private function refund_needs_sync($order, $refund)
+	{
+		if (($refund['status'] ?? '') !== 'approved' || empty($refund['txHash'])) {
+			return false;
+		}
+		if ($order->get_meta(self::$meta_key_refund_tx_hash)) {
+			return false;
+		}
+		return 'refunded' !== $order->get_status();
 	}
 
 	/**
@@ -504,6 +642,73 @@ class WC_Gateway_QBitFlow extends WC_Payment_Gateway
 	}
 
 	/**
+	 * Explicit handler that mirrors an approved QBitFlow refund into WooCommerce.
+	 *
+	 * This is the ONLY code path that writes order meta / creates a WC refund for
+	 * a QBitFlow refund. It is reachable solely via a nonce-protected POST from
+	 * the order meta box, is gated on `edit_shop_orders`, and re-fetches the
+	 * refund fresh from the API (posted data is never trusted). It then defers
+	 * to maybe_complete_wc_refund() for the idempotent write.
+	 */
+	public function handle_apply_refund()
+	{
+		$order_id = isset($_POST['order_id']) ? absint(wp_unslash($_POST['order_id'])) : 0;
+
+		if (! current_user_can('edit_shop_orders')) {
+			wp_die(esc_html__('You do not have permission to sync QBitFlow refunds.', 'qbitflow-for-woocommerce'));
+		}
+
+		check_admin_referer('qbitflow_apply_refund_' . $order_id);
+
+		$order = $order_id ? wc_get_order($order_id) : false;
+		if (! $order || $order->get_payment_method() !== $this->id) {
+			wp_die(esc_html__('Invalid QBitFlow order.', 'qbitflow-for-woocommerce'));
+		}
+
+		$session_uuid = $order->get_meta(self::$meta_key_session_uuid);
+		$refund       = $session_uuid ? QBitFlow_API::get_refund_by_transaction($session_uuid) : null;
+
+		if (is_array($refund)) {
+			// Persist the snapshot once the refund is terminal so future admin
+			// views are cheap. Terminal refunds are immutable on QBitFlow's side.
+			if (self::is_terminal_refund_status($refund['status'] ?? '')) {
+				$order->update_meta_data(self::$meta_key_refund_snapshot, wp_json_encode($refund));
+				$order->save();
+			}
+			$this->maybe_complete_wc_refund($order, $refund);
+		}
+
+		// Bust the cached lookup so the redirected screen shows the new state.
+		if ($session_uuid) {
+			delete_transient('qbitflow_refund_' . md5((string) $session_uuid));
+		}
+
+		$redirect = wp_get_referer();
+		if (! $redirect) {
+			$redirect = admin_url('admin.php?page=wc-orders&action=edit&id=' . $order_id);
+		}
+		wp_safe_redirect(add_query_arg('qbitflow_refund_synced', '1', $redirect));
+		exit;
+	}
+
+	/**
+	 * Show a one-time success notice after handle_apply_refund() redirects back.
+	 */
+	public function maybe_show_refund_synced_notice()
+	{
+		if (! current_user_can('edit_shop_orders')) {
+			return;
+		}
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display flag from our own post/redirect/get; renders a success notice only, no state change.
+		if (empty($_GET['qbitflow_refund_synced'])) {
+			return;
+		}
+		echo '<div class="notice notice-success is-dismissible"><p>' .
+			esc_html__('QBitFlow refund synced to WooCommerce.', 'qbitflow-for-woocommerce') .
+			'</p></div>';
+	}
+
+	/**
 	 * Render the meta box content.
 	 */
 	public function render_order_meta_box($post_or_order)
@@ -574,15 +779,17 @@ class WC_Gateway_QBitFlow extends WC_Payment_Gateway
 
 		echo '</table>';
 
-		// Refund section. Prefer the snapshot collected by sync_refund_on_order_screen.
-		// Fall back to a fresh API call if the screen hook didn't run (defensive).
+		// Refund section. Prefer the record collected by sync_refund_on_order_screen.
+		// Fall back to a cached lookup if the screen hook didn't run (defensive).
 		$refund = self::$refund_request_cache[$order->get_id()] ?? null;
 		if ($refund === null && $session_uuid && ! array_key_exists($order->get_id(), self::$refund_request_cache)) {
-			$refund = QBitFlow_API::get_refund_by_transaction($session_uuid);
+			$refund = self::get_refund_cached($session_uuid);
 		}
 
 		if (is_array($refund)) {
-			$this->render_refund_section($refund);
+			$needs_sync = self::$refund_needs_sync[$order->get_id()]
+				?? $this->refund_needs_sync($order, $refund);
+			$this->render_refund_section($refund, $order, $needs_sync);
 		}
 	}
 
@@ -595,8 +802,12 @@ class WC_Gateway_QBitFlow extends WC_Payment_Gateway
 	 *   merchantMessage — merchant's response (denial reason, internal note)
 	 *   txHash         — on-chain refund hash, present when status=approved & paid
 	 *   respondedAt    — timestamp the merchant acted on the request
+	 *
+	 * When $needs_sync is true, QBitFlow reports a settled refund that WC hasn't
+	 * recorded yet; we render a plain-language notice plus a nonce-protected
+	 * "Sync to WooCommerce" button that posts to handle_apply_refund().
 	 */
-	private function render_refund_section($refund)
+	private function render_refund_section($refund, $order = null, $needs_sync = false)
 	{
 		$status = $refund['status'] ?? '';
 
@@ -656,6 +867,50 @@ class WC_Gateway_QBitFlow extends WC_Payment_Gateway
 		echo '</a></td></tr>';
 
 		echo '</table>';
+
+		// When QBitFlow has settled a refund WooCommerce hasn't recorded yet, the
+		// actionable "Sync refund to WooCommerce" button is rendered as an admin
+		// notice (see maybe_show_refund_sync_prompt) rather than here — a POST form
+		// inside the order meta box would be nested in the order's own <form> and
+		// silently dropped by the browser.
+		if ($needs_sync && $order) {
+			echo '<p style="margin:10px 0 0;color:#8a6d3b">' . esc_html__(
+				'QBitFlow reports a completed refund not yet recorded here — use the "Sync refund to WooCommerce" notice at the top of this screen.',
+				'qbitflow-for-woocommerce'
+			) . '</p>';
+		}
+	}
+
+	/**
+	 * Admin notice offering to sync a settled QBitFlow refund into WooCommerce.
+	 *
+	 * Rendered on the order screen (outside the order form) so its nonce-protected
+	 * POST reaches admin-post.php intact. Shown only when sync_refund_on_order_screen()
+	 * flagged the current order as needing a sync.
+	 */
+	public function maybe_show_refund_sync_prompt()
+	{
+		if (! current_user_can('edit_shop_orders')) {
+			return;
+		}
+
+		$order_id = self::$screen_order_id;
+		if (! $order_id || empty(self::$refund_needs_sync[$order_id])) {
+			return;
+		}
+
+		echo '<div class="notice notice-warning">';
+		echo '<p style="margin-bottom:6px"><strong>' . esc_html__('QBitFlow refund ready to sync', 'qbitflow-for-woocommerce') . '</strong><br>';
+		echo esc_html__('QBitFlow reports a completed refund that is not yet recorded on this order. Sync it to mark the order refunded and record the refund transaction.', 'qbitflow-for-woocommerce') . '</p>';
+		echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '" style="margin-bottom:10px">';
+		echo '<input type="hidden" name="action" value="qbitflow_apply_refund">';
+		echo '<input type="hidden" name="order_id" value="' . esc_attr($order_id) . '">';
+		wp_nonce_field('qbitflow_apply_refund_' . $order_id);
+		echo '<button type="submit" class="button button-primary">' .
+			esc_html__('Sync refund to WooCommerce', 'qbitflow-for-woocommerce') .
+			'</button>';
+		echo '</form>';
+		echo '</div>';
 	}
 
 	public static $meta_key_session_uuid    = '_qbitflow_session_uuid';
