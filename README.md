@@ -81,6 +81,20 @@ Customer checkout → QBitFlow payment page → On-chain payment → Webhook →
 4. Payment confirmed on-chain, order auto-updated
 5. Customer receives invoice with transaction details
 
+## External Services
+
+This plugin relies on **QBitFlow**, a third-party cryptocurrency payment service, to function. QBitFlow processes crypto payments non-custodially (funds go directly to your wallet via smart contracts). Without it, the gateway cannot create payments or process refunds. The plugin communicates with the QBitFlow API at `https://api.qbitflow.app`, authenticating every request with the API key you enter in the plugin settings.
+
+What data is sent, and when:
+
+- **At checkout** — the buyer's email, first/last name, phone number, and billing address, plus the order and transaction details (amount, currency, order reference), to find or create the customer record on QBitFlow and create the payment session the buyer is redirected to.
+- **On the admin order screen / when you sync a refund** — the transaction identifier for that order, to look up its current refund status.
+- **When QBitFlow sends a payment webhook** — the received webhook payload and its signature, sent back to QBitFlow to verify the notification is authentic before acting on it.
+
+No data is sent to QBitFlow outside of these actions.
+
+This service is provided by QBitFlow. By using it you agree to their [Terms of Service](https://qbitflow.app/terms) and [Privacy Policy](https://qbitflow.app/privacy).
+
 ## Development
 
 ### Local Setup with Docker
@@ -105,7 +119,7 @@ Logs are written to: `WooCommerce → Status → Logs → qbitflow`
 2. [Order received page after a successful crypto payment](screenshots/order-received.png)
 3. [Admin order view with the QBitFlow payment block](screenshots/wc-order.png)
 4. [Pending refund request shown directly in the order meta box](screenshots/wc-order-with-refund-request.png)
-5. [Order auto-marked Refunded once the refund settles on-chain](screenshots/wc-order-with-refund-accepted.png)
+5. [Order synced to Refunded once the refund settles on-chain](screenshots/wc-order-with-refund-accepted.png)
 6. [Plugin settings (API key, debug logging)](screenshots/plugin-settings.png)
 
 ## Contributing
