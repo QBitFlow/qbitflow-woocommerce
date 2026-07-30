@@ -49,6 +49,12 @@ When you're ready to accept real payments, simply replace the test key with a **
 
 For more details, see the [QBitFlow Test Mode Documentation](https://qbitflow.app/docs?section=test-mode).
 
+= Learn more =
+
+* [Accept crypto on WooCommerce — full overview](https://qbitflow.app/woocommerce) — how the non-custodial checkout works, which chains and tokens your customers can pay with, and pricing.
+* [Step-by-step setup guide](https://qbitflow.app/blog/19-How-to-accept-crypto-payments-on-WooCommerce) — install the plugin, connect your wallet, and take your first crypto payment.
+* [QBitFlow documentation](https://qbitflow.app/docs) — API keys, test mode, webhooks, and full API reference.
+
 = Requirements =
 
 * WooCommerce 7.0 or later
@@ -57,7 +63,19 @@ For more details, see the [QBitFlow Test Mode Documentation](https://qbitflow.ap
 
 == Installation ==
 
-1. Upload the `qbitflow-for-woocommerce` folder to `/wp-content/plugins/`
+= Automatic (recommended) =
+
+1. In your WordPress admin, go to Plugins → Add New
+2. Search for "QBitFlow"
+3. Click "Install Now", then "Activate"
+4. Go to WooCommerce → Settings → Payments → QBitFlow
+5. Enter your API key from your [QBitFlow dashboard](https://qbitflow.app)
+6. Enable the payment method and save
+
+= Manual =
+
+1. Download the [Plugin ZIP](https://github.com/QBitFlow/qbitflow-for-woocommerce/releases) and upload it via Plugins → Add New → Upload Plugin
+   (or extract the `qbitflow-for-woocommerce` folder to `/wp-content/plugins/`)
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Go to WooCommerce → Settings → Payments → QBitFlow
 4. Enter your API key from your [QBitFlow dashboard](https://qbitflow.app)

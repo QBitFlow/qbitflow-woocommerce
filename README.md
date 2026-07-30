@@ -17,6 +17,12 @@ Accept cryptocurrency payments in your WooCommerce store via [QBitFlow](https://
 - 📦 **HPOS Compatible** — Works with High-Performance Order Storage
 - 🧪 **Test Mode** — Try the full payment flow without spending a dime
 
+## Learn More
+
+* [Accept crypto on WooCommerce — full overview](https://qbitflow.app/woocommerce) — how the non-custodial checkout works, which chains and tokens your customers can pay with, and pricing.
+* [Step-by-step setup guide](https://qbitflow.app/blog/19-How-to-accept-crypto-payments-on-WooCommerce) — install the plugin, connect your wallet, and take your first crypto payment.
+* [QBitFlow documentation](https://qbitflow.app/docs) — API keys, test mode, webhooks, and full API reference.
+
 ## Installation
 
 ### From WordPress.org
@@ -25,22 +31,25 @@ Accept cryptocurrency payments in your WooCommerce store via [QBitFlow](https://
 3. Click **Install Now** → **Activate**
 
 ### Manual Installation
-1. Download the latest release from [Releases](https://github.com/QBitFlow/qbitflow-for-woocommerce/releases)
-2. Upload to `/wp-content/plugins/`
-3. Activate in WordPress admin
+1. Download the [Plugin ZIP](https://github.com/QBitFlow/qbitflow-for-woocommerce/releases) and upload it via Plugins → Add New → Upload Plugin
+   (or extract the `qbitflow-for-woocommerce` folder to `/wp-content/plugins/`)
+2. Activate the plugin through the 'Plugins' menu in WordPress
+
 
 ### From Source
 ```bash
 git clone https://github.com/QBitFlow/qbitflow-for-woocommerce.git
 cd qbitflow-for-woocommerce
+sudo chmod +x build.sh
+./build.sh
 # Copy to your WordPress plugins directory
-cp -r . /path/to/wordpress/wp-content/plugins/qbitflow-for-woocommerce
+cp -r ./build/qbitflow-for-woocommerce /path/to/wordpress/wp-content/plugins/qbitflow-for-woocommerce
 ```
 
 ## Configuration
 
 1. Go to **WooCommerce → Settings → Payments → QBitFlow**
-2. Enter your API key from [qbitflow.app](https://qbitflow.app)
+2. Enter your API key from [QBitFlow dashboard](https://qbitflow.app)
 3. Enable the payment method
 4. Save changes
 
@@ -115,12 +124,12 @@ Logs are written to: `WooCommerce → Status → Logs → qbitflow`
 
 ## Screenshots
 
-1. [Customers select QBitFlow at checkout](screenshots/checkout.png)
-2. [Order received page after a successful crypto payment](screenshots/order-received.png)
-3. [Admin order view with the QBitFlow payment block](screenshots/wc-order.png)
-4. [Pending refund request shown directly in the order meta box](screenshots/wc-order-with-refund-request.png)
-5. [Order synced to Refunded once the refund settles on-chain](screenshots/wc-order-with-refund-accepted.png)
-6. [Plugin settings (API key, debug logging)](screenshots/plugin-settings.png)
+1. [Customers select QBitFlow at checkout](.wordpress-org/screenshot-1.png)
+2. [Order received page after a successful crypto payment](.wordpress-org/screenshot-2.png)
+3. [Admin order view with the QBitFlow payment block](.wordpress-org/screenshot-3.png)
+4. [Pending refund request shown directly in the order meta box](.wordpress-org/screenshot-4.png)
+5. [Order synced to Refunded once the refund settles on-chain](.wordpress-org/screenshot-5.png)
+6. [Plugin settings (API key, debug logging)](.wordpress-org/screenshot-6.png)
 
 ## Contributing
 
