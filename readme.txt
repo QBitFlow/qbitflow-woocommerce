@@ -4,7 +4,7 @@ Tags: cryptocurrency, payments, ethereum, solana, web3
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.1.2
+Stable tag: 1.1.5
 WC requires at least: 7.0
 WC tested up to: 9.7
 License: GPL-2.0-or-later
@@ -120,6 +120,10 @@ This service is provided by QBitFlow. By using it you agree to their terms and p
 6. Plugin settings (API key, debug logging) under WooCommerce → Settings → Payments
 
 == Changelog ==
+
+= 1.1.5 =
+* Updating Screenshots
+* Ready for publishing
 
 = 1.1.2 =
 * Settings now show a **Test / Live** mode badge derived from your API key, plus a plain-language reminder that test keys run on blockchain testnets with faucet funds (no real cryptocurrency spent)
