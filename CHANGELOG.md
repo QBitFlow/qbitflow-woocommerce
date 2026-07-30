@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.5] - 2026-07-30
+- Updating Screenshots
+- Ready for publishing
+
 ## [1.1.2] - 2026-07-25
 
 ### Added
