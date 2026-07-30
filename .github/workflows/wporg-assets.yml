@@ -1,0 +1,21 @@
+# .github/workflows/wporg-assets.yml
+name: Update WordPress.org readme & assets
+
+on:
+  push:
+    branches: [ main ]        # or your default branch
+    paths:
+      - 'readme.txt'
+      - '.wordpress-org/**'
+  
+jobs:
+  assets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy readme + assets
+        uses: 10up/action-wordpress-plugin-asset-update@stable
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SLUG: qbitflow-for-woocommerce
