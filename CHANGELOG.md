@@ -2,6 +2,56 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0] - 2026-10-31
+
+Moves the plugin to QBitFlow API v2 through the official PHP SDK v3. Requires PHP 8.2,
+WordPress 6.4 and WooCommerce 8.0.
+
+### Added
+- The QBitFlow PHP SDK v3 (3.1.1), bundled and namespace-prefixed (Strauss, `QBitFlowWC\Vendor\`), on a PSR-18 adapter over the WordPress HTTP API (no redirects, TLS always verified)
+- Itemized checkout: shipping, taxes (per rate, e.g. "VAT (20%)") and fees as checkout fee lines, at most 10, always summing to the order total (amounts in integer cents)
+- Processing fee setting with three choices: "Use my QBitFlow setting" (default, `fees.processingFee` omitted), "Customer pays" (`true`) and "Store pays" (`false`); the fee paid is recorded on the order; a member key always follows its organization. A 1.x "customer pays" setting migrates to "Customer pays", anything else to "Use my QBitFlow setting"
+- Accepted coins under the payment method at checkout (classic and block), read from a one-hour cache and never fetched during a customer request
+- Failed payment attempts noted on the order (meta box and order notes)
+- Orders list: Crypto column and QBitFlow filter (HPOS and posts storage)
+- Accounting export (CSV or JSON, any range of days, ranges over 92 days fetched in windows, whole account) in the settings and as `wp qbitflow export`
+- WP-CLI: `wp qbitflow status`, `connect-webhook`, `reconcile`, `export`
+- New API key format `sk_<live|test>_<uuid>_<secret>`; the old format is called out in the settings
+- Member keys and the `members.checkoutRedirects` policy: on `403 policy_disabled` one retry without return addresses (idempotency key suffixed `-nr`), remembered for an hour, with an admin notice
+- Member keys and the `members.products` policy: while the organization keeps its members from opening their own checkouts (`403 policy_disabled`, learned from a checkout or from the status check), QBitFlow is hidden at checkout and the settings and an admin notice say why
+- Release gate `bin/release-check.sh` (`composer release-check`): lint on the minimum PHP, unit and integration suites, build, ZIP checks and Plugin Check
+- "Connect webhook": registers the store's endpoint (`payment.completed`, `checkout.expired`, `refund.*`) and stores its secret per mode; manual secret field for keys without the `members.webhooks` policy
+- Webhook receiver at `/wp-json/qbitflow-wc/v2/webhook`: local signature verification, 1 MiB cap before reading, 200 for anything not this store's, per-order event deduplication, 500 (retry) on handler errors
+- Reconciliation: the return page and an Action Scheduler job (every 15 min, orders of the last 48 h) read the checkout and settle the order
+- Refunds from webhooks: requests noted and listed (hourly resync), approved refunds recorded as WooCommerce refunds of `refundPercent` of the order total (rounded to the cent, capped to the remaining amount), rejections noted
+- Settings status panel: account, organization or member space, mode, accepted currencies, webhook health, store currency, PHP security
+- Site Health test for php2shell (CVE-2026-109618, CVE-2026-109619)
+- Order meta box from local meta, with explorer links, refunds and "Refresh from QBitFlow"
+- Filters `qbitflow_wc_usd_rate`, `qbitflow_wc_client_options`, `qbitflow_wc_http_request_args`; action `qbitflow_wc_webhook_event`; constant `QBITFLOW_WC_API_BASE_URL`
+- Unit suite and integration suite (wp-env, WooCommerce, HPOS, fake API, signed deliveries)
+
+### Changed
+- Checkout sessions carry `reference` `wc-<store id>-<order id>`, metadata `{source, store_id, order_id}` and an `Idempotency-Key`; one payable checkout per order (reused, or expired when the amounts change; never reused for changed amounts while a payment is in flight)
+- Store text the API refuses (`" ; | [ ] { } < > ~ ^ \` and control characters) is replaced by look-alikes in names, descriptions, fee labels and customer details
+- Webhook, return page and background check never apply a payment twice at once (per-order lock); a replaced checkout expiring never fails the order
+- The store id follows the site address and each order carries a random token in its checkout metadata, so a staging copy sharing the account can't complete production orders
+- An order is marked paid only when the received amount covers the order (on hold otherwise, also when the order grew or changed currency since its checkout)
+- A failed attempt no longer fails the order; an expired checkout fails it (retryable from My Account); cancelling an order expires its checkout
+- Customers are found or created by reference `wc-<sha256(email)>`; the 1.x email map is removed on upgrade
+- The gateway no longer declares `refunds` support (crypto refunds are signed in the QBitFlow dashboard)
+
+- The gateway icon is shown at a fixed size (block themes don't limit it)
+- The accounting export download discards output buffers first, never sends a wrong `Content-Length` and refuses to start when output was already sent; its script is an enqueued admin script and its control a real button
+
+### Removed
+- The hand-written v1 API client, the remote `/webhooks/verify` call per delivery, the "Sync refund" button and the per-page refund lookups
+
+### Fixed
+- An order the return page or the background check completed before the webhook arrived never got its payment page link (receipt, invoice, refund request): the webhook now adds it
+- An approved refund is recorded under the order's lock: a delivery QBitFlow retries while the first is still running no longer records it twice
+- Stores not priced in USD were charged their total as US dollars: QBitFlow is now hidden for them unless `qbitflow_wc_usd_rate` provides a rate
+- Webhooks for unknown orders answered 404, making QBitFlow retry and eventually disable the endpoint
+
 ## [1.1.5] - 2026-07-30
 - Updating Screenshots
 - Ready for publishing

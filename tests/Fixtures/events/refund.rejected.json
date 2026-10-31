@@ -1,0 +1,38 @@
+{
+  "createdAt": "2026-10-01T12:00:00Z",
+  "data": {
+    "amount": "10.0042",
+    "amountMinUnits": "10004200",
+    "amountUsd": "10.0042",
+    "chain": "BASE",
+    "createdAt": "2026-09-29T08:15:00Z",
+    "currency": {
+      "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "chain": "BASE",
+      "code": "BASE:USDC",
+      "decimals": 6,
+      "id": 8,
+      "mainCurrencyId": 3,
+      "name": "USD Coin",
+      "symbol": "USDC",
+      "test": false
+    },
+    "held": false,
+    "initiatedBy": "customer",
+    "merchantMessage": "Only one payment was received for this order",
+    "paid": "10.0042",
+    "paidMinUnits": "10004200",
+    "paidUsd": "10.0042",
+    "reason": "I was charged twice for the same order",
+    "refundPercent": "100",
+    "respondedAt": "2026-10-01T12:00:00Z",
+    "status": "rejected",
+    "test": false,
+    "txUuid": "pay@01a0f755-f200-7000-8000-000000000001",
+    "uuid": "refund@01a0ec3b-3ba0-7000-8000-000000000006"
+  },
+  "id": "evt_cc682edc-ba17-5d1a-8f4f-a7534c2f4783",
+  "test": false,
+  "type": "refund.rejected",
+  "version": "v2"
+}

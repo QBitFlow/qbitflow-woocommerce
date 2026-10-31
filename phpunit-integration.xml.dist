@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!--
+	Integration suite: WordPress + WooCommerce through the WP test library, in wp-env:
+	  npx @wordpress/env start
+	  composer test:integration
+	The live checks (group "live") skip unless QBITFLOW_API_KEY and QBITFLOW_BASE_URL are set.
+-->
+<phpunit
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+	bootstrap="tests/Integration/bootstrap.php"
+	colors="true"
+	failOnRisky="true"
+	failOnWarning="true">
+	<testsuites>
+		<testsuite name="integration">
+			<directory suffix="Test.php">tests/Integration</directory>
+		</testsuite>
+	</testsuites>
+	<php>
+		<const name="WP_TESTS_PHPUNIT_POLYFILLS_PATH" value="vendor/yoast/phpunit-polyfills"/>
+	</php>
+</phpunit>

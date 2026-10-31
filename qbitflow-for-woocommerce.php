@@ -2,318 +2,78 @@
 
 /**
  * Plugin Name: QBitFlow for WooCommerce
- * Plugin URI: https://qbitflow.app
+ * Plugin URI: https://qbitflow.app/woocommerce
  * Description: Accept cryptocurrency payments in WooCommerce via QBitFlow. Non-custodial — funds go directly to your wallet.
- * Version: 1.1.5
+ * Version: 2.0.0
  * Author: QBitFlow
  * License: GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: qbitflow-for-woocommerce
- * Requires at least: 5.8
- * Tested up to: 7.0
- * Requires PHP: 7.4
+ * Domain Path: /languages
+ * Requires at least: 6.4
+ * Tested up to: 7.1
+ * Requires PHP: 8.2
  * Requires Plugins: woocommerce
- * WC requires at least: 7.0
- * WC tested up to: 9.7
+ * WC requires at least: 8.0
+ * WC tested up to: 11.2
  */
+
+// This file must stay parseable by old PHP versions: it only checks the version and loads the
+// plugin. Everything else lives in src/ and needs PHP 8.2.
 
 if (! defined('ABSPATH')) {
 	exit;
 }
 
-define('QBITFLOW_WC_VERSION', '1.1.5');
+define('QBITFLOW_WC_VERSION', '2.0.0');
+define('QBITFLOW_WC_FILE', __FILE__);
 define('QBITFLOW_WC_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('QBITFLOW_WC_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('QBITFLOW_WC_API_BASE', 'https://api.qbitflow.app/v1');
 
-/**
- * Declare HPOS compatibility — must run early.
- */
+if (version_compare(PHP_VERSION, '8.2', '<')) {
+	add_action('admin_notices', function () {
+		echo '<div class="notice notice-error"><p>' . sprintf(
+			/* translators: %s: the PHP version the site runs */
+			esc_html__('QBitFlow for WooCommerce needs PHP 8.2 or later (this site runs PHP %s). The plugin is inactive until PHP is upgraded.', 'qbitflow-for-woocommerce'),
+			esc_html(PHP_VERSION)
+		) . '</p></div>';
+	});
+	return;
+}
+
+if (! file_exists(QBITFLOW_WC_PLUGIN_DIR . 'vendor-prefixed/autoload.php')) {
+	add_action('admin_notices', function () {
+		echo '<div class="notice notice-error"><p>' .
+			esc_html__('QBitFlow for WooCommerce is missing its bundled libraries. Reinstall the plugin from WordPress.org, or run "composer install" in a development copy.', 'qbitflow-for-woocommerce') .
+			'</p></div>';
+	});
+	return;
+}
+
+require_once QBITFLOW_WC_PLUGIN_DIR . 'vendor-prefixed/autoload.php';
+
+// The plugin's own classes (QBitFlowWC\…, the bundled libraries excepted).
+spl_autoload_register(function ($class) {
+	if (strpos($class, 'QBitFlowWC\\') !== 0 || strpos($class, 'QBitFlowWC\\Vendor\\') === 0) {
+		return;
+	}
+	$file = QBITFLOW_WC_PLUGIN_DIR . 'src/' . str_replace('\\', '/', substr($class, strlen('QBitFlowWC\\'))) . '.php';
+	if (is_readable($file)) {
+		require $file;
+	}
+});
+
+// Declare HPOS and block-checkout compatibility early.
 add_action('before_woocommerce_init', function () {
 	if (class_exists(\Automattic\WooCommerce\Utilities\FeaturesUtil::class)) {
-		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__, true);
+		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', QBITFLOW_WC_FILE, true);
+		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('cart_checkout_blocks', QBITFLOW_WC_FILE, true);
 	}
 });
 
-/**
- * Register block checkout support — must run before plugins_loaded.
- */
-add_action('woocommerce_blocks_loaded', function () {
-	if (! class_exists('Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry')) {
-		return;
-	}
+add_action('woocommerce_blocks_loaded', array('QBitFlowWC\\Blocks\\PaymentMethod', 'register'));
 
-	require_once QBITFLOW_WC_PLUGIN_DIR . 'includes/class-wc-gateway-qbitflow-blocks.php';
+add_action('plugins_loaded', array('QBitFlowWC\\Plugin', 'boot'), 11);
 
-	add_action(
-		'woocommerce_blocks_payment_method_type_registration',
-		function (Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $registry) {
-			$registry->register(new WC_Gateway_QBitFlow_Blocks());
-		}
-	);
-});
-
-/**
- * Initialize the gateway on plugins_loaded.
- */
-add_action('plugins_loaded', 'qbitflow_wc_init', 11);
-
-function qbitflow_wc_init()
-{
-	if (! class_exists('WooCommerce')) {
-		add_action('admin_notices', function () {
-			echo '<div class="error"><p><strong>QBitFlow for WooCommerce</strong> requires WooCommerce to be installed and active.</p></div>';
-		});
-		return;
-	}
-
-	// Load classes
-	require_once QBITFLOW_WC_PLUGIN_DIR . 'includes/class-qbitflow-api.php';
-	require_once QBITFLOW_WC_PLUGIN_DIR . 'includes/class-qbitflow-customer-sync.php';
-	require_once QBITFLOW_WC_PLUGIN_DIR . 'includes/class-wc-gateway-qbitflow.php';
-
-	// Initialize customer sync
-	QBitFlow_Customer_Sync::init();
-
-	// Register the gateway
-	add_filter('woocommerce_payment_gateways', function ($gateways) {
-		$gateways[] = 'WC_Gateway_QBitFlow';
-		return $gateways;
-	});
-
-	// Register webhook handler
-	add_action('rest_api_init', 'qbitflow_wc_register_webhook');
-
-	// Admin notice for pending refund requests
-	add_action('admin_notices', 'qbitflow_wc_pending_refunds_notice');
-
-	// Refund sync handler. Registered here (not in the gateway constructor)
-	// because WooCommerce does not instantiate payment gateways on an
-	// admin-post.php request, so a constructor hook would never fire there.
-	add_action('admin_post_qbitflow_apply_refund', 'qbitflow_wc_handle_apply_refund');
-}
-
-/**
- * Bridge the admin-post refund-sync action to the gateway instance.
- *
- * Resolves the live WC_Gateway_QBitFlow instance from WooCommerce (which builds
- * it here on demand) and defers to its nonce/capability-checked handler.
- */
-function qbitflow_wc_handle_apply_refund()
-{
-	$gateways = (function_exists('WC') && WC()->payment_gateways())
-		? WC()->payment_gateways()->payment_gateways()
-		: array();
-
-	if (empty($gateways['qbitflow']) || ! method_exists($gateways['qbitflow'], 'handle_apply_refund')) {
-		wp_die(esc_html__('QBitFlow gateway is not available.', 'qbitflow-for-woocommerce'));
-	}
-
-	$gateways['qbitflow']->handle_apply_refund();
-}
-
-/**
- * Register the webhook REST endpoint.
- */
-function qbitflow_wc_register_webhook()
-{
-	register_rest_route('qbitflow-wc', '/webhook', array(
-		'methods'             => 'POST',
-		'callback'            => 'qbitflow_wc_handle_webhook',
-		// Public endpoint: QBitFlow's webhook delivery cannot present a WordPress credential.
-		// Auth boundary is the HMAC signature verified inside the callback via QBitFlow_API::verify_webhook_signature().
-		'permission_callback' => '__return_true',
-	));
-}
-
-/**
- * Handle incoming webhooks from QBitFlow.
- */
-function qbitflow_wc_handle_webhook(WP_REST_Request $request)
-{
-	$payload   = $request->get_body();
-	$signature = $request->get_header('X-Webhook-Signature-256');
-	$timestamp = $request->get_header('X-Webhook-Timestamp');
-	$webhook_id = $request->get_header('X-Webhook-ID');
-
-	if (empty($timestamp)) {
-		return new WP_REST_Response(array('error' => 'Invalid timestamp'), 400);
-	}
-
-	// Reachability check from the dashboard "Test the endpoint" action.
-	// The test probe sends a fake payload — acknowledge it and skip processing.
-	if ($webhook_id === "test-webhook-id") {
-		// Test webhook: always accept, no signature verification.
-		return new WP_REST_Response(array('received' => true), 200);
-	}
-
-	if (! QBitFlow_API::verify_webhook_signature($payload, $signature, $timestamp)) {
-		return new WP_REST_Response(array('error' => 'Invalid signature'), 401);
-	}
-
-	$data = json_decode($payload, true);
-	if (! $data || empty($data['uuid'])) {
-		return new WP_REST_Response(array('error' => 'Invalid payload'), 400);
-	}
-
-
-	// Parse the webhook data
-	$session_uuid = sanitize_text_field($data['uuid']);
-	$status       = sanitize_text_field($data['status']['status'] ?? '');
-	$tx_hash      = sanitize_text_field($data['status']['txHash'] ?? '');
-	$management_link = esc_url_raw($data['managementPageLink'] ?? '');
-	$customer_uuid = sanitize_text_field($data['session']['customerUUID'] ?? '');
-
-	// Look up the order via meta_query — webhooks correlate to orders only
-	// through the QBitFlow session UUID stored in order meta, so this is
-	// unavoidable. Works for both classic post-table orders and HPOS-stored
-	// orders; the old postmeta fallback never matched HPOS rows anyway.
-	// phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Required: webhook → order correlation by session UUID; runs once per webhook delivery.
-	$orders = wc_get_orders(array(
-		'limit'      => 1,
-		'meta_query' => array(
-			array(
-				'key'   => WC_Gateway_QBitFlow::$meta_key_session_uuid,
-				'value' => $session_uuid,
-			),
-		),
-	));
-	// phpcs:enable WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-
-	if (empty($orders)) {
-		return new WP_REST_Response(array('error' => 'Order not found'), 404);
-	}
-
-	$order = $orders[0];
-
-	if ($tx_hash) {
-		$order->update_meta_data(WC_Gateway_QBitFlow::$meta_key_tx_hash, $tx_hash);
-	}
-	if ($management_link) {
-		$order->update_meta_data(WC_Gateway_QBitFlow::$meta_key_management_link, $management_link);
-	}
-	if ($customer_uuid) {
-		$order->update_meta_data(WC_Gateway_QBitFlow::$meta_key_customer_uuid, $customer_uuid);
-	}
-	$order->update_meta_data(WC_Gateway_QBitFlow::$meta_key_last_status, $status);
-	$order->save();
-
-	switch ($status) {
-		case 'completed':
-			if (! $order->is_paid()) {
-				wc_reduce_stock_levels($order);
-				if (WC()->cart) {
-					WC()->cart->empty_cart();
-				}
-
-				$order->payment_complete($session_uuid);
-				$order->add_order_note(
-					sprintf(
-						/* translators: %s: QBitFlow session UUID */
-						__('QBitFlow payment completed. Session: %s', 'qbitflow-for-woocommerce'),
-						$session_uuid ?: 'N/A'
-					)
-				);
-			}
-			break;
-		case 'pending':
-		case 'waitingConfirmation':
-			if ($order->get_status() === 'pending') {
-				$order->update_status('on-hold', __('QBitFlow: Awaiting blockchain confirmation.', 'qbitflow-for-woocommerce'));
-			}
-			break;
-		case 'failed':
-			$message = sanitize_text_field($data['status']['message'] ?? 'Payment failed');
-			$order->update_status(
-				'failed',
-				sprintf(
-					/* translators: %s: failure message returned by QBitFlow */
-					__('QBitFlow payment failed: %s', 'qbitflow-for-woocommerce'),
-					$message
-				)
-			);
-			break;
-		case 'cancelled':
-			$order->update_status('cancelled', __('QBitFlow payment cancelled by customer.', 'qbitflow-for-woocommerce'));
-			break;
-		case 'expired':
-			$order->update_status('cancelled', __('QBitFlow payment session expired.', 'qbitflow-for-woocommerce'));
-			break;
-	}
-
-	return new WP_REST_Response(array('received' => true), 200);
-}
-
-/**
- * Admin notice: alert merchant when pending refund requests exist.
- *
- * Refunds are handled outside WordPress (the merchant approves/refuses on the
- * QBitFlow dashboard), so we always refetch — no transient cache. A
- * per-request static guard avoids double-fetching inside the same page render.
- */
-function qbitflow_wc_pending_refunds_notice()
-{
-	if (! current_user_can('manage_woocommerce')) {
-		return;
-	}
-
-	// Handle one-hour dismissal
-	if (isset($_GET['qbitflow_dismiss_refunds']) && check_admin_referer('qbitflow_dismiss_refunds')) {
-		set_transient('qbitflow_refunds_dismissed_' . get_current_user_id(), true, HOUR_IN_SECONDS);
-		wp_safe_redirect(remove_query_arg(array('qbitflow_dismiss_refunds', '_wpnonce')));
-		exit;
-	}
-
-	if (get_transient('qbitflow_refunds_dismissed_' . get_current_user_id())) {
-		return;
-	}
-
-	static $count = null;
-	if ($count === null) {
-		$result = QBitFlow_API::get_pending_refunds();
-		$count  = (! is_wp_error($result) && is_array($result)) ? count($result) : 0;
-	}
-
-	if ($count < 1) {
-		return;
-	}
-
-	$dismiss_url = wp_nonce_url(add_query_arg('qbitflow_dismiss_refunds', '1'), 'qbitflow_dismiss_refunds');
-?>
-	<div class="notice notice-warning" style="display:flex;align-items:center;gap:12px;padding:12px 16px;">
-		<p style="margin:0;flex:1">
-			<strong><?php esc_html_e('QBitFlow — Pending Refund Requests', 'qbitflow-for-woocommerce'); ?></strong>
-			&nbsp;
-			<?php
-			printf(
-				esc_html(
-					/* translators: %d: number of pending refund requests */
-					_n(
-						'You have %d pending refund request.',
-						'You have %d pending refund requests.',
-						$count,
-						'qbitflow-for-woocommerce'
-					)
-				),
-				(int) $count
-			);
-			?>
-		</p>
-		<a href="https://qbitflow.app/refunds" target="_blank" class="button button-primary button-small">
-			<?php esc_html_e('Review on QBitFlow &rarr;', 'qbitflow-for-woocommerce'); ?>
-		</a>
-		<a href="<?php echo esc_url($dismiss_url); ?>" style="white-space:nowrap;font-size:12px;">
-			<?php esc_html_e('Dismiss for 1 hour', 'qbitflow-for-woocommerce'); ?>
-		</a>
-	</div>
-<?php
-}
-
-/**
- * Add plugin action links.
- */
-add_filter('plugin_action_links_' . plugin_basename(__FILE__), function ($links) {
-	$settings_link = '<a href="' . admin_url('admin.php?page=wc-settings&tab=checkout&section=qbitflow') . '">' . __('Settings', 'qbitflow-for-woocommerce') . '</a>';
-	array_unshift($links, $settings_link);
-	return $links;
-});
+register_activation_hook(__FILE__, array('QBitFlowWC\\Plugin', 'activate'));
+register_deactivation_hook(__FILE__, array('QBitFlowWC\\Plugin', 'deactivate'));

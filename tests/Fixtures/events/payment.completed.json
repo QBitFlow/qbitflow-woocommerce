@@ -1,0 +1,80 @@
+{
+  "createdAt": "2026-10-01T12:00:00Z",
+  "data": {
+    "amount": "10",
+    "amountMinUnits": "10000000",
+    "amountUsd": "10",
+    "chain": "BASE",
+    "checkoutOpenedAt": "2026-10-01T12:00:00Z",
+    "confirmedAt": "2026-10-01T11:59:58Z",
+    "createdAt": "2026-10-01T12:00:00Z",
+    "currency": {
+      "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "chain": "BASE",
+      "code": "BASE:USDC",
+      "decimals": 6,
+      "id": 8,
+      "mainCurrencyId": 3,
+      "name": "USD Coin",
+      "symbol": "USDC",
+      "test": false
+    },
+    "customerReference": "crm-5521",
+    "customerUuid": "01a05cd7-2a00-7d00-8000-0000000000d1",
+    "explorerUrl": "https://basescan.org/tx/0x1111111111111111111111111111111111111111111111111111111111111111",
+    "fees": [],
+    "from": "0xabcdef1234567890abcdef1234567890abcdef12",
+    "managementPageLink": "https://qbitflow.app/user/019cadfd-8900-7a00-8000-0000000000a1/manage?uuid=pay@01a0f755-f200-7000-8000-000000000001",
+    "metadata": {
+      "crm:customer": "C-5521",
+      "orderId": "order-1042"
+    },
+    "paid": "10.0042",
+    "paidMinUnits": "10004200",
+    "paidUsd": "10.0042",
+    "priceUsd": "10",
+    "productDescription": "Lifetime access to the Pro plan",
+    "productName": "Pro plan (lifetime)",
+    "productUuid": "019cadfd-8900-7c00-8000-0000000000c1",
+    "reference": "order-1042",
+    "settlement": {
+      "feePercent": "0.99",
+      "split": {
+        "merchant": {
+          "amount": "9.901",
+          "amountMinUnits": "9901000",
+          "amountUsd": "9.901"
+        },
+        "networkFee": {
+          "amount": "0.0042",
+          "amountMinUnits": "4200",
+          "amountUsd": "0.0042"
+        },
+        "platform": {
+          "amount": "0.099",
+          "amountMinUnits": "99000",
+          "amountUsd": "0.099"
+        }
+      },
+      "transaction": {
+        "blockNumber": "52468103",
+        "blockTime": "2026-10-01T11:59:58Z",
+        "fee": {
+          "amount": "0.00000114",
+          "amountMinUnits": "1140000000000",
+          "amountUsd": "0.005144"
+        },
+        "gasUsed": 95000,
+        "nativePriceUsd": "4512.37"
+      }
+    },
+    "test": false,
+    "to": "0x1234567890abcdef1234567890abcdef12345678",
+    "txHash": "0x1111111111111111111111111111111111111111111111111111111111111111",
+    "uuid": "pay@01a0f755-f200-7000-8000-000000000001"
+  },
+  "id": "evt_82c1e15d-c0d9-584f-a65a-fb4099925273",
+  "test": false,
+  "type": "payment.completed",
+  "version": "v2"
+}

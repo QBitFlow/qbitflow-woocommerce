@@ -1,0 +1,52 @@
+{
+  "createdAt": "2026-10-01T12:00:00Z",
+  "data": {
+    "amount": "5.0021",
+    "amountMinUnits": "5002100",
+    "amountUsd": "5.0021",
+    "chain": "BASE",
+    "createdAt": "2026-09-29T08:15:00Z",
+    "currency": {
+      "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "chain": "BASE",
+      "code": "BASE:USDC",
+      "decimals": 6,
+      "id": 8,
+      "mainCurrencyId": 3,
+      "name": "USD Coin",
+      "symbol": "USDC",
+      "test": false
+    },
+    "explorerUrl": "https://basescan.org/tx/0x4444444444444444444444444444444444444444444444444444444444444444",
+    "held": false,
+    "initiatedBy": "customer",
+    "paid": "10.0042",
+    "paidMinUnits": "10004200",
+    "paidUsd": "10.0042",
+    "reason": "I was charged twice for the same order",
+    "refundPercent": "50",
+    "respondedAt": "2026-10-01T12:00:00Z",
+    "settlement": {
+      "transaction": {
+        "blockNumber": "52468103",
+        "blockTime": "2026-10-01T11:59:58Z",
+        "fee": {
+          "amount": "0.00000114",
+          "amountMinUnits": "1140000000000",
+          "amountUsd": "0.005144"
+        },
+        "gasUsed": 95000,
+        "nativePriceUsd": "4512.37"
+      }
+    },
+    "status": "approved",
+    "test": false,
+    "txHash": "0x4444444444444444444444444444444444444444444444444444444444444444",
+    "txUuid": "pay@01a0f755-f200-7000-8000-000000000001",
+    "uuid": "refund@01a0ec3b-3ba0-7000-8000-000000000006"
+  },
+  "id": "evt_8f63fc99-3f0c-5e75-8aef-d9b4886a51d7",
+  "test": false,
+  "type": "refund.approved",
+  "version": "v2"
+}

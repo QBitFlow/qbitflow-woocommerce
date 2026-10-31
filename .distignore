@@ -20,7 +20,22 @@ CHANGELOG.md
 # Raw source screenshots (listing screenshots live in SVN /assets/)
 screenshots
 
-# Build tooling
+# Dependencies: the runtime ones ship prefixed in vendor-prefixed/; vendor/ is dev tooling only.
+# composer.json ships (WordPress.org asks for it next to Composer-built code); the lock does not.
+vendor
+composer.lock
+
+# Tests and dev environment
+tests
+phpunit.xml.dist
+phpunit-integration.xml.dist
+.phpunit.result.cache
+.phpunit.cache
+.wp-env.json
+.wp-env.override.json
+
+# Build and release tooling
 build.sh
+bin
 .distignore
 build

@@ -1,0 +1,11 @@
+{
+  "createdAt": "2026-10-01T12:00:00Z",
+  "data": {
+    "endpointUuid": "019cadfd-8900-7e00-8000-0000000000e1",
+    "message": "A test event from the dashboard: nothing happened"
+  },
+  "id": "evt_bd1a913d-188e-5ac5-a2d6-5fd25cd67301",
+  "test": false,
+  "type": "webhook.test",
+  "version": "v2"
+}

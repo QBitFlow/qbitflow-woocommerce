@@ -1,213 +1,851 @@
 # Copyright (C) 2026 QBitFlow
-# This file is distributed under the GPL-2.0-or-later license.
+# This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: QBitFlow for WooCommerce 1.1.0\n"
-"Report-Msgid-Bugs-To: https://qbitflow.app\n"
+"Project-Id-Version: QBitFlow for WooCommerce 2.0.0\n"
+"Report-Msgid-Bugs-To: https://github.com/QBitFlow/qbitflow-woocommerce/issues\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-05-08T00:00:00+00:00\n"
+"POT-Creation-Date: 2026-10-28T22:59:07+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: qbitflow-for-woocommerce\n"
 
-#: qbitflow-for-woocommerce.php:183
-#, php-format
-msgid "QBitFlow payment completed. Session: %s"
+#. Plugin Name of the plugin
+#: qbitflow-for-woocommerce.php
+msgid "QBitFlow for WooCommerce"
 msgstr ""
 
-#: qbitflow-for-woocommerce.php:190
-msgid "QBitFlow: Awaiting blockchain confirmation."
+#. Plugin URI of the plugin
+#: qbitflow-for-woocommerce.php
+msgid "https://qbitflow.app/woocommerce"
 msgstr ""
 
-#: qbitflow-for-woocommerce.php:195
-#, php-format
-msgid "QBitFlow payment failed: %s"
+#. Description of the plugin
+#: qbitflow-for-woocommerce.php
+msgid "Accept cryptocurrency payments in WooCommerce via QBitFlow. Non-custodial — funds go directly to your wallet."
 msgstr ""
 
-#: qbitflow-for-woocommerce.php:198
-msgid "QBitFlow payment cancelled by customer."
-msgstr ""
-
-#: qbitflow-for-woocommerce.php:201
-msgid "QBitFlow payment session expired."
-msgstr ""
-
-#: qbitflow-for-woocommerce.php:246
-msgid "QBitFlow — Pending Refund Requests"
-msgstr ""
-
-#: qbitflow-for-woocommerce.php:251
-#, php-format
-msgid "You have %d pending refund request."
-msgid_plural "You have %d pending refund requests."
-msgstr[0] ""
-msgstr[1] ""
-
-#: qbitflow-for-woocommerce.php:263
-msgid "Review on QBitFlow &rarr;"
-msgstr ""
-
-#: qbitflow-for-woocommerce.php:266
-msgid "Dismiss for 1 hour"
-msgstr ""
-
-#: qbitflow-for-woocommerce.php:276
-msgid "Settings"
-msgstr ""
-
-#: includes/class-wc-gateway-qbitflow-blocks.php:74
-msgid "Pay with Crypto"
-msgstr ""
-
-#: includes/class-wc-gateway-qbitflow.php:22
+#. Author of the plugin
+#: qbitflow-for-woocommerce.php
+#: src/Gateway.php:32
+#: src/Gateway.php:225
 msgid "QBitFlow"
 msgstr ""
 
-#: includes/class-wc-gateway-qbitflow.php:23
-msgid "Accept cryptocurrency payments via QBitFlow. Non-custodial — funds go directly to your wallet via smart contracts."
-msgstr ""
-
-#: includes/class-wc-gateway-qbitflow.php:65
-msgid "Enable/Disable"
-msgstr ""
-
-#: includes/class-wc-gateway-qbitflow.php:67
-msgid "Enable QBitFlow Crypto Payments"
-msgstr ""
-
-#: includes/class-wc-gateway-qbitflow.php:71
-msgid "API Key"
-msgstr ""
-
-#: includes/class-wc-gateway-qbitflow.php:73
-msgid "Get your API key from the QBitFlow dashboard at qbitflow.app."
-msgstr ""
-
-#: includes/class-wc-gateway-qbitflow.php:78
-msgid "Debug Log"
-msgstr ""
-
-#: includes/class-wc-gateway-qbitflow.php:80
-msgid "Enable logging"
-msgstr ""
-
-#: includes/class-wc-gateway-qbitflow.php:83
+#. translators: %s: the PHP version the site runs
+#: qbitflow-for-woocommerce.php:37
 #, php-format
-msgid "Log events to %s"
+msgid "QBitFlow for WooCommerce needs PHP 8.2 or later (this site runs PHP %s). The plugin is inactive until PHP is upgraded."
 msgstr ""
 
-#: includes/class-wc-gateway-qbitflow.php:118
+#: qbitflow-for-woocommerce.php:47
+msgid "QBitFlow for WooCommerce is missing its bundled libraries. Reinstall the plugin from WordPress.org, or run \"composer install\" in a development copy."
+msgstr ""
+
+#: src/Admin/AccountingExport.php:31
+msgid "Enter the first and the last day as dates (YYYY-MM-DD)."
+msgstr ""
+
+#: src/Admin/AccountingExport.php:34
+msgid "Choose CSV or JSON."
+msgstr ""
+
+#: src/Admin/AccountingExport.php:37
+msgid "The first day must not be after the last day."
+msgstr ""
+
+#: src/Admin/AccountingExport.php:40
+msgid "The first day is in the future: nothing to export yet."
+msgstr ""
+
+#: src/Admin/AccountingExport.php:62
+msgid "Enter a valid QBitFlow API key first."
+msgstr ""
+
+#. translators: %s: the error QBitFlow returned
+#: src/Admin/AccountingExport.php:79
+#, php-format
+msgid "QBitFlow could not export the data: %s"
+msgstr ""
+
+#: src/Admin/AccountingExport.php:121
+msgid "The download could not start because the page had already started to send output. Check for a plugin or a PHP notice printing text early, then try again."
+msgstr ""
+
+#: src/Admin/AccountingExport.php:150
+msgid "Accounting export"
+msgstr ""
+
+#: src/Admin/AccountingExport.php:151
+msgid "Download every payment, refund and fee of your QBitFlow account (or of the member space your key opens) for a range of days, in UTC. It covers the whole account, not only this store's orders."
+msgstr ""
+
+#: src/Admin/AccountingExport.php:159
+msgid "From"
+msgstr ""
+
+#: src/Admin/AccountingExport.php:162
+msgid "to"
+msgstr ""
+
+#: src/Admin/AccountingExport.php:165
+msgid "Download"
+msgstr ""
+
+#: src/Admin/Actions.php:56
+msgid "You are not allowed to do this."
+msgstr ""
+
+#: src/Admin/Actions.php:77
+msgid "Webhook connected: QBitFlow now confirms payments and refunds to this store."
+msgstr ""
+
+#: src/Admin/Notices.php:66
+msgid "This API key uses the old format; create a new key in the QBitFlow dashboard."
+msgstr ""
+
+#: src/Admin/Notices.php:80
+#: src/Admin/StatusPanel.php:115
+#: src/Webhooks/EndpointManager.php:123
+msgid "The API key is not a QBitFlow key (it starts with sk_)."
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:36
+msgid "QBitFlow Payment"
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:49
+msgid "Not a QBitFlow payment."
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:58
+msgid "Status"
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:60
+msgid "Mode"
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:61
+msgid "Checkout"
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:64
+msgid "Tx hash"
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:67
+msgid "Paid in"
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:69
+msgid "Paid (USD)"
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:71
+#: src/Gateway.php:123
+msgid "Processing fee"
+msgstr ""
+
+#. translators: %s: fee in USD
+#: src/Admin/OrderMetaBox.php:73
+#, php-format
+msgid "$%s, paid by the customer"
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:76
+msgid "Customer"
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:79
+msgid "Earlier failed attempt (the customer paid afterwards)"
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:80
+msgid "Last failed attempt"
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:97
+msgid "Payment page"
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:100
+msgid "Refresh from QBitFlow"
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:103
+msgid "Refund on QBitFlow"
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:115
+msgid "Not a QBitFlow order."
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:121
+msgid "QBitFlow: the payment is recorded on this order."
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:122
+msgid "QBitFlow: the checkout expired unpaid."
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:123
+msgid "QBitFlow: the checkout is still open (not paid yet)."
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:124
+msgid "QBitFlow could not be read: see WooCommerce → Status → Logs (qbitflow)."
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:126
+msgid "a manual refresh"
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:162
+msgid "Refunds"
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:170
+msgid "tx"
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:183
+msgid "Completed"
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:184
+msgid "Confirming on-chain"
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:185
+#: src/Admin/OrdersList.php:134
+msgid "Awaiting payment"
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:186
+msgid "Expired"
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:194
+msgid "Requested"
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:195
+#: src/Admin/OrdersList.php:127
+msgid "Refunded"
+msgstr ""
+
+#: src/Admin/OrderMetaBox.php:196
+msgid "Rejected"
+msgstr ""
+
+#: src/Admin/OrdersList.php:63
+#: src/Admin/OrdersList.php:68
+msgid "Crypto"
+msgstr ""
+
+#: src/Admin/OrdersList.php:122
+msgid "Refund requested"
+msgstr ""
+
+#: src/Admin/OrdersList.php:126
+msgid "Partially refunded"
+msgstr ""
+
+#: src/Admin/OrdersList.php:131
+msgid "Amount mismatch"
+msgstr ""
+
+#: src/Admin/OrdersList.php:167
+msgid "QBitFlow: any"
+msgstr ""
+
+#: src/Admin/OrdersList.php:168
+msgid "QBitFlow: all"
+msgstr ""
+
+#: src/Admin/OrdersList.php:169
+msgid "QBitFlow: awaiting payment"
+msgstr ""
+
+#: src/Admin/OrdersList.php:170
+msgid "QBitFlow: refund requested"
+msgstr ""
+
+#: src/Admin/StatusPanel.php:113
+msgid "No API key yet."
+msgstr ""
+
+#: src/Admin/StatusPanel.php:190
+msgid "member space"
+msgstr ""
+
+#: src/Admin/StatusPanel.php:190
+msgid "organization space"
+msgstr ""
+
+#: src/Admin/StatusPanel.php:191
+msgid "test mode"
+msgstr ""
+
+#: src/Admin/StatusPanel.php:191
+msgid "live mode"
+msgstr ""
+
+#: src/Admin/StatusPanel.php:192
+#: src/Admin/StatusPanel.php:194
+msgid "Account"
+msgstr ""
+
+#: src/Admin/StatusPanel.php:200
+#: src/Admin/StatusPanel.php:201
+msgid "Accepted"
+msgstr ""
+
+#: src/Admin/StatusPanel.php:201
+msgid "Your wallets accept no currency yet: add a wallet in the QBitFlow dashboard. Until then QBitFlow is hidden at checkout."
+msgstr ""
+
+#: src/Admin/StatusPanel.php:206
+msgid "Return addresses"
+msgstr ""
+
+#: src/Admin/StatusPanel.php:210
+msgid "Webhook"
+msgstr ""
+
+#: src/Admin/StatusPanel.php:215
+#: src/Admin/StatusPanel.php:220
+msgid "Currency"
+msgstr ""
+
+#. translators: %s: store currency code
+#: src/Admin/StatusPanel.php:217
+#, php-format
+msgid "%s, converted to USD by your qbitflow_wc_usd_rate filter"
+msgstr ""
+
+#. translators: %s: store currency code
+#: src/Admin/StatusPanel.php:222
+#, php-format
+msgid "QBitFlow prices in USD and your store uses %s: QBitFlow stays hidden at checkout until a USD rate is provided through the qbitflow_wc_usd_rate filter."
+msgstr ""
+
+#: src/Admin/StatusPanel.php:230
+msgid "PHP"
+msgstr ""
+
+#: src/Admin/StatusPanel.php:232
+msgid "Site Health"
+msgstr ""
+
+#: src/Admin/StatusPanel.php:250
+msgid "Refresh"
+msgstr ""
+
+#. translators: %s: how long ago the status was read
+#: src/Admin/StatusPanel.php:253
+#, php-format
+msgid "Checked %s ago."
+msgstr ""
+
+#: src/Admin/StatusPanel.php:261
+msgid "Your organization turned off return addresses for members: customers land on the organization's page after paying. Orders still complete."
+msgstr ""
+
+#: src/Admin/StatusPanel.php:270
+#: src/Upgrade.php:82
+msgid "Connect webhook"
+msgstr ""
+
+#: src/Admin/StatusPanel.php:277
+msgid "Using the signing secret entered below."
+msgstr ""
+
+#: src/Admin/StatusPanel.php:280
+msgid "Not connected: QBitFlow cannot confirm payments to this store yet."
+msgstr ""
+
+#: src/Admin/StatusPanel.php:283
+msgid "Connected."
+msgstr ""
+
+#: src/Admin/StatusPanel.php:286
+msgid "The endpoint was deleted in QBitFlow."
+msgstr ""
+
+#: src/Admin/StatusPanel.php:289
+msgid "Connected to another site address or QBitFlow account: connect again."
+msgstr ""
+
+#. translators: %s: why QBitFlow disabled the endpoint
+#: src/Admin/StatusPanel.php:294
+#, php-format
+msgid "Disabled by QBitFlow (%s): payments are not confirmed automatically. Fix the cause, then connect again."
+msgstr ""
+
+#. translators: %s: time since the last successful delivery
+#: src/Admin/StatusPanel.php:301
+#, php-format
+msgid "last delivery %s ago"
+msgstr ""
+
+#: src/Admin/StatusPanel.php:304
+msgid "no delivery yet"
+msgstr ""
+
+#. translators: 1: time since deliveries started failing, 2: last delivery
+#: src/Admin/StatusPanel.php:308
+#, php-format
+msgid "Deliveries are failing since %1$s ago (%2$s). Live endpoints are disabled after 3 days of failures: check that this site is reachable."
+msgstr ""
+
+#. translators: %s: last delivery
+#: src/Admin/StatusPanel.php:316
+#, php-format
+msgid "Connected (%s)."
+msgstr ""
+
+#: src/Blocks/PaymentMethod.php:71
+msgid "Pay with Crypto"
+msgstr ""
+
+#. translators: %s: list of coins, e.g. "USDC (Ethereum, Base), ETH"
+#: src/Checkout/AcceptedCoins.php:54
+#, php-format
+msgid "Accepted coins: %s"
+msgstr ""
+
+#. translators: %s: currency code
+#: src/Checkout/SessionManager.php:92
+#, php-format
+msgid "Crypto payments are not available in %s."
+msgstr ""
+
+#: src/Checkout/SessionManager.php:100
+msgid "This order has nothing to pay."
+msgstr ""
+
+#. translators: %s: the previous order's number
+#: src/Checkout/SessionManager.php:189
+#, php-format
+msgid "A crypto payment for your order #%s is being confirmed. Please wait for it to complete before placing a new order."
+msgstr ""
+
+#. translators: 1: QBitFlow checkout id, 2: the new order's number
+#: src/Checkout/SessionManager.php:197
+#, php-format
+msgid "This order's QBitFlow checkout %1$s was closed because the customer started a new order (#%2$s) from their cart."
+msgstr ""
+
+#: src/Checkout/SessionManager.php:308
+msgid "A crypto payment for this order is being confirmed. Please wait for it to complete before changing the order."
+msgstr ""
+
+#. translators: 1: amount in USD, 2: QBitFlow checkout id
+#: src/Checkout/SessionManager.php:358
+#, php-format
+msgid "Awaiting QBitFlow crypto payment of $%1$s (checkout %2$s)."
+msgstr ""
+
+#: src/Checkout/SessionManager.php:405
+msgid "A previous crypto checkout for this order is still open. Please wait a few minutes and try again, or contact the store."
+msgstr ""
+
+#: src/Checkout/SessionManager.php:425
+msgid "the checkout"
+msgstr ""
+
+#: src/Checkout/SessionManager.php:445
+msgid "This store is in QBitFlow test mode, where a checkout is at most $5. Use a smaller order to test."
+msgstr ""
+
+#: src/Checkout/SessionManager.php:448
+msgid "QBitFlow live mode needs the store to use HTTPS (its return addresses were refused)."
+msgstr ""
+
+#: src/Checkout/SessionManager.php:452
+msgid "The crypto payment service could not be reached. Please try again in a moment."
+msgstr ""
+
+#: src/Checkout/SessionManager.php:455
+msgid "Unable to start the crypto payment. Please try again or choose another payment method."
+msgstr ""
+
+#: src/Checkout/SessionManager.php:460
+msgid "Crypto payments are not available right now. Please choose another payment method."
+msgstr ""
+
+#. translators: %s: order number
+#: src/Checkout/SessionManager.php:468
 #, php-format
 msgid "Order #%s"
 msgstr ""
 
-#: includes/class-wc-gateway-qbitflow.php:154
-msgid "Unable to create crypto payment session. Please try again."
+#: src/Frontend/OrderPages.php:38
+msgid "the return page"
 msgstr ""
 
-#: includes/class-wc-gateway-qbitflow.php:165
-msgid "Crypto payment error: "
+#: src/Frontend/OrderPages.php:48
+msgid "Crypto payment confirmed ✓"
 msgstr ""
 
-#: includes/class-wc-gateway-qbitflow.php:179
-msgid "Awaiting QBitFlow crypto payment."
-msgstr ""
-
-#: includes/class-wc-gateway-qbitflow.php:203
-msgid "Crypto Payment Confirmed ✓"
-msgstr ""
-
-#: includes/class-wc-gateway-qbitflow.php:205
+#: src/Frontend/OrderPages.php:49
 msgid "Your payment has been confirmed on the blockchain."
 msgstr ""
 
-#: includes/class-wc-gateway-qbitflow.php:209
-#: includes/class-wc-gateway-qbitflow.php:240
-msgid "Transaction Hash:"
+#: src/Frontend/OrderPages.php:50
+#: src/Frontend/OrderPages.php:76
+msgid "Transaction:"
 msgstr ""
 
-#: includes/class-wc-gateway-qbitflow.php:212
-msgid "Payment Processing…"
+#: src/Frontend/OrderPages.php:56
+msgid "Payment processing…"
 msgstr ""
 
-#: includes/class-wc-gateway-qbitflow.php:213
-msgid "Your crypto payment is being confirmed on the blockchain. You'll receive an email once it's complete."
+#: src/Frontend/OrderPages.php:57
+msgid "Your crypto payment is being confirmed on the blockchain. You will receive an email once it is complete."
 msgstr ""
 
-#: includes/class-wc-gateway-qbitflow.php:219
-msgid "View Payment Details & Invoice"
+#: src/Frontend/OrderPages.php:60
+msgid "View payment details & invoice"
 msgstr ""
 
-#: includes/class-wc-gateway-qbitflow.php:244
-msgid "View your payment details & invoice:"
+#: src/Frontend/OrderPages.php:79
+msgid "Payment details & invoice:"
 msgstr ""
 
-#: includes/class-wc-gateway-qbitflow.php:249
-msgid "Crypto Transaction Hash:"
+#: src/Frontend/OrderPages.php:85
+msgid "Crypto transaction:"
 msgstr ""
 
-#: includes/class-wc-gateway-qbitflow.php:253
-msgid "View Payment Details & Invoice →"
+#: src/Frontend/OrderPages.php:89
+msgid "View payment details & invoice →"
 msgstr ""
 
-#: includes/class-wc-gateway-qbitflow.php:273
-#, php-format
-msgid "Refund of %1$s requested.%2$sReason: %3$s%4$sSession: %5$s%6$sTx Hash:%7$s%8$s⚠️ Crypto refunds cannot be processed automatically. Please process this refund manually from your QBitFlow dashboard: %9$s%10$sOnce completed, update this order's notes with the refund transaction hash for your records."
-msgstr ""
-
-#: includes/class-wc-gateway-qbitflow.php:303
+#: src/Frontend/OrderPages.php:106
 msgid "Invoice"
 msgstr ""
 
-#: includes/class-wc-gateway-qbitflow.php:332
-msgid "QBitFlow Payment"
+#: src/Gateway.php:33
+msgid "Accept cryptocurrency payments via QBitFlow. Non-custodial — funds go directly to your wallet via smart contracts."
 msgstr ""
 
-#: includes/class-wc-gateway-qbitflow.php:350
-msgid "Not a QBitFlow payment."
+#: src/Gateway.php:42
+msgid "A small processing fee is added on the QBitFlow checkout."
 msgstr ""
 
-#: includes/class-wc-gateway-qbitflow.php:373
-#: includes/class-wc-gateway-qbitflow.php:440
-msgid "Status"
+#: src/Gateway.php:70
+msgid "Enable/Disable"
 msgstr ""
 
-#: includes/class-wc-gateway-qbitflow.php:380
-msgid "Session"
+#: src/Gateway.php:72
+msgid "Enable QBitFlow Crypto Payments"
 msgstr ""
 
-#: includes/class-wc-gateway-qbitflow.php:388
-msgid "Tx Hash"
+#: src/Gateway.php:76
+msgid "Description"
 msgstr ""
 
-#: includes/class-wc-gateway-qbitflow.php:395
-msgid "Customer"
+#: src/Gateway.php:78
+msgid "The payment method description shown to customers at checkout."
 msgstr ""
 
-#: includes/class-wc-gateway-qbitflow.php:405
-msgid "View Invoice / Management Page"
+#: src/Gateway.php:79
+msgid "Pay with crypto — funds go straight to your wallet, non-custodial and secure."
 msgstr ""
 
-#: includes/class-wc-gateway-qbitflow.php:427
-msgid "Refund Request"
+#: src/Gateway.php:83
+msgid "API Key"
 msgstr ""
 
-#: includes/class-wc-gateway-qbitflow.php:445
-msgid "Amount"
+#: src/Gateway.php:85
+msgid "From the QBitFlow dashboard (Settings → API keys). A test key runs on test networks; a live key takes real payments."
 msgstr ""
 
-#: includes/class-wc-gateway-qbitflow.php:450
-msgid "Reason"
+#: src/Gateway.php:90
+msgid "Itemized checkout"
 msgstr ""
 
-#: includes/class-wc-gateway-qbitflow.php:455
-msgid "Note"
+#: src/Gateway.php:92
+msgid "Show taxes, shipping and fees as separate lines on the QBitFlow checkout"
 msgstr ""
 
-#: includes/class-wc-gateway-qbitflow.php:461
-msgid "Manage Refunds &rarr;"
+#: src/Gateway.php:93
+msgid "Off: the customer sees one amount, the order total."
+msgstr ""
+
+#: src/Gateway.php:97
+msgid "Accepted coins"
+msgstr ""
+
+#: src/Gateway.php:99
+msgid "Show the coins your wallets accept at checkout"
+msgstr ""
+
+#: src/Gateway.php:104
+msgid "Webhook signing secret"
+msgstr ""
+
+#: src/Gateway.php:106
+msgid "Leave empty and use \"Connect webhook\" above. Only if your API key cannot register webhooks: create the endpoint in the QBitFlow dashboard with the URL shown above and paste its whsec_… secret here."
+msgstr ""
+
+#: src/Gateway.php:110
+msgid "Debug Log"
+msgstr ""
+
+#: src/Gateway.php:112
+msgid "Enable logging"
+msgstr ""
+
+#: src/Gateway.php:114
+msgid "Logs QBitFlow events under WooCommerce → Status → Logs (source \"qbitflow\"). Errors are always logged."
+msgstr ""
+
+#: src/Gateway.php:129
+msgid "Set by your organization"
+msgstr ""
+
+#: src/Gateway.php:131
+msgid "Your organization decides who pays the fee for its members."
+msgstr ""
+
+#: src/Gateway.php:137
+msgid "Use my QBitFlow setting"
+msgstr ""
+
+#: src/Gateway.php:138
+msgid "Customer pays"
+msgstr ""
+
+#: src/Gateway.php:139
+msgid "Store pays"
+msgstr ""
+
+#: src/Gateway.php:141
+msgid "\"Customer pays\" adds the fee as a last line on the QBitFlow checkout, so you receive the full order total: the customer then pays slightly more than the WooCommerce order total, and the fee is recorded on the order. \"Use my QBitFlow setting\" follows the choice made in your QBitFlow dashboard; only \"Customer pays\" also mentions the fee on your checkout page."
+msgstr ""
+
+#: src/Gateway.php:229
+msgid "Refund rules, receipt emails and branding are settings of your QBitFlow account, shared by every store using it: change them in the QBitFlow dashboard."
+msgstr ""
+
+#: src/Gateway.php:245
+msgid "Order not found."
+msgstr ""
+
+#: src/Gateway.php:262
+msgid "Test mode"
+msgstr ""
+
+#: src/Gateway.php:262
+msgid "Payments run on test networks with faucet funds: try the whole flow without real cryptocurrency (test checkouts are capped at $5). Swap in a live key to accept real payments."
+msgstr ""
+
+#: src/Gateway.php:263
+msgid "Live mode"
+msgstr ""
+
+#: src/Gateway.php:263
+msgid "Real cryptocurrency payments are processed."
+msgstr ""
+
+#: src/Gateway.php:264
+msgid "Unknown key"
+msgstr ""
+
+#: src/Gateway.php:264
+msgid "The API key format is not recognised. Copy the key again from your QBitFlow dashboard."
+msgstr ""
+
+#: src/Gateway.php:265
+msgid "No API key"
+msgstr ""
+
+#: src/Gateway.php:265
+msgid "Enter your QBitFlow API key below to enable payments."
+msgstr ""
+
+#. translators: 1: payment id, 2: transaction hash
+#: src/Orders/PaymentSync.php:60
+#, php-format
+msgid "QBitFlow received a second payment for this already paid order (%1$s, tx %2$s). Refund it from the QBitFlow dashboard."
+msgstr ""
+
+#. translators: 1: amount received in USD, 2: transaction hash
+#: src/Orders/PaymentSync.php:107
+#, php-format
+msgid "QBitFlow payment received for $%1$s (tx %2$s), but the order's amount in USD could not be checked. Check it before fulfilling."
+msgstr ""
+
+#. translators: 1: amount received in USD, 2: amount expected in USD, 3: transaction hash
+#: src/Orders/PaymentSync.php:113
+#, php-format
+msgid "QBitFlow payment received for $%1$s, but this order requires $%2$s (tx %3$s). Check it before fulfilling."
+msgstr ""
+
+#. translators: 1: amount and token paid, 2: USD value, 3: transaction hash, 4: where the confirmation came from
+#: src/Orders/PaymentSync.php:126
+#, php-format
+msgid "QBitFlow payment completed: %1$s (≈ $%2$s). Tx: %3$s. Confirmed by %4$s."
+msgstr ""
+
+#. translators: %s: processing fee in USD
+#: src/Orders/PaymentSync.php:135
+#, php-format
+msgid "The customer also paid QBitFlow's $%s processing fee."
+msgstr ""
+
+#. translators: %s: where the information came from
+#: src/Orders/PaymentSync.php:175
+#, php-format
+msgid "QBitFlow checkout expired unpaid (%s). The customer can pay again from their account."
+msgstr ""
+
+#: src/Orders/PaymentSync.php:255
+msgid "unknown reason"
+msgstr ""
+
+#. translators: %s: why the attempt failed, with its code
+#: src/Orders/PaymentSync.php:259
+#, php-format
+msgid "Crypto payment attempt failed: %s. The customer can try again until the checkout expires."
+msgstr ""
+
+#: src/Orders/Reconciler.php:64
+msgid "background check"
+msgstr ""
+
+#: src/Plugin.php:26
+msgid "QBitFlow for WooCommerce requires WooCommerce to be installed and active."
+msgstr ""
+
+#: src/Plugin.php:59
+msgid "Settings"
+msgstr ""
+
+#. translators: 1: refund share in percent, 2: the customer's reason
+#: src/Refunds/RefundSync.php:70
+#, php-format
+msgid "The customer requested a QBitFlow refund (%1$s%%). Reason: %2$s. Approve or reject it in the QBitFlow dashboard."
+msgstr ""
+
+#. translators: %s: refund transaction hash
+#: src/Refunds/RefundSync.php:107
+#, php-format
+msgid "QBitFlow refund sent (tx %s); the order was already fully refunded in WooCommerce."
+msgstr ""
+
+#. translators: 1: QBitFlow refund id, 2: refund share in percent, 3: refund transaction hash, 4: reason
+#: src/Refunds/RefundSync.php:120
+#, php-format
+msgid "QBitFlow refund %1$s (%2$s%%), tx %3$s. %4$s"
+msgstr ""
+
+#. translators: 1: amount refunded, 2: token amount sent back, 3: refund transaction hash
+#: src/Refunds/RefundSync.php:138
+#, php-format
+msgid "QBitFlow refund completed: %1$s recorded (%2$s sent back on-chain). Tx: %3$s"
+msgstr ""
+
+#. translators: %s: the merchant's answer
+#: src/Refunds/RefundSync.php:153
+#, php-format
+msgid "QBitFlow refund request rejected. Answer: %s"
+msgstr ""
+
+#: src/Refunds/RefundSync.php:209
+#: src/Upgrade.php:79
+msgid "QBitFlow:"
+msgstr ""
+
+#. translators: %d: number of pending refund requests
+#: src/Refunds/RefundSync.php:212
+#, php-format
+msgid "%d refund request waits for your answer."
+msgid_plural "%d refund requests wait for your answer."
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Refunds/RefundSync.php:216
+msgid "Review on QBitFlow →"
+msgstr ""
+
+#: src/Security/SiteHealth.php:29
+#: src/Security/SiteHealth.php:97
+msgid "PHP is patched against php2shell"
+msgstr ""
+
+#: src/Security/SiteHealth.php:46
+msgid "Security"
+msgstr ""
+
+#. translators: 1: running PHP version, 2: first fixed release of that branch
+#: src/Security/SiteHealth.php:68
+#, php-format
+msgid "PHP %1$s is affected by the php2shell vulnerabilities (CVE-2026-109618, CVE-2026-109619), which let an unauthenticated attacker run code on the server. Ask your host to upgrade PHP to %2$s or later."
+msgstr ""
+
+#. translators: %s: running PHP version
+#: src/Security/SiteHealth.php:74
+#, php-format
+msgid "PHP %s has no official fix for the php2shell vulnerabilities (CVE-2026-109618, CVE-2026-109619). Ask your host to move to PHP 8.2.35, 8.3.36, 8.4.27 or 8.5.12 or later."
+msgstr ""
+
+#: src/Security/SiteHealth.php:77
+msgid "Until PHP is upgraded, set fatal_error_backtraces=0 in php.ini and restart PHP: it closes the confirmed attack path on PHP 8.5."
+msgstr ""
+
+#: src/Security/SiteHealth.php:78
+msgid "session.upload_progress.enabled is on. Unless a plugin needs upload progress, set it to 0 in php.ini and restart PHP: it is one of the php2shell attack paths, and the PHP security team recommends turning it off even once patched."
+msgstr ""
+
+#: src/Security/SiteHealth.php:83
+msgid "This PHP comes from your Linux distribution, which may have backported the fixes without changing the version number: check its security advisory before acting."
+msgstr ""
+
+#. translators: %s: running PHP version
+#: src/Security/SiteHealth.php:88
+#, php-format
+msgid "PHP %s includes the fixes for the php2shell vulnerabilities (CVE-2026-109618, CVE-2026-109619)."
+msgstr ""
+
+#: src/Security/SiteHealth.php:95
+msgid "PHP is vulnerable to php2shell"
+msgstr ""
+
+#: src/Security/SiteHealth.php:96
+msgid "PHP is patched; one php2shell hardening setting is recommended"
+msgstr ""
+
+#: src/Upgrade.php:80
+msgid "connect the webhook so payments and refunds are confirmed to your store right away (until then, orders are checked every 15 minutes)."
+msgstr ""
+
+#: src/Webhooks/EndpointManager.php:125
+msgid "Enter and save your QBitFlow API key first."
+msgstr ""
+
+#: src/Webhooks/EndpointManager.php:161
+msgid "This API key is not allowed to manage webhooks (your organization turned off members.webhooks). Create the endpoint in the QBitFlow dashboard with the URL shown here, then paste its signing secret in \"Webhook signing secret\"."
+msgstr ""
+
+#: src/Webhooks/EndpointManager.php:163
+msgid "This API key is not allowed to manage webhooks."
+msgstr ""
+
+#. translators: %s: the error QBitFlow returned
+#: src/Webhooks/EndpointManager.php:167
+#, php-format
+msgid "QBitFlow could not register the webhook: %s"
+msgstr ""
+
+#: src/Webhooks/Receiver.php:129
+#: src/Webhooks/Receiver.php:137
+msgid "webhook"
 msgstr ""

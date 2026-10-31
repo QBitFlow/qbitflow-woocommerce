@@ -1,0 +1,82 @@
+{
+	"name": "qbitflow/qbitflow-for-woocommerce",
+	"description": "Accept cryptocurrency payments in WooCommerce via QBitFlow.",
+	"type": "wordpress-plugin",
+	"license": "GPL-2.0-or-later",
+	"homepage": "https://qbitflow.app/woocommerce",
+	"require": {
+		"php": ">=8.2",
+		"nyholm/psr7": "^1.8",
+		"qbitflow/qbitflow-php": "^3.1.1"
+	},
+	"require-dev": {
+		"brianhenryie/strauss": "^0.31",
+		"phpunit/phpunit": "^9.6",
+		"yoast/phpunit-polyfills": "^4.0"
+	},
+	"replace": {
+		"guzzlehttp/guzzle": "^8.0.1"
+	},
+	"autoload": {
+		"psr-4": {
+			"QBitFlowWC\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"QBitFlowWC\\Tests\\": "tests/"
+		}
+	},
+	"config": {
+		"platform": {
+			"php": "8.2.35"
+		},
+		"platform-check": false,
+		"sort-packages": true,
+		"optimize-autoloader": true
+	},
+	"extra": {
+		"strauss": {
+			"target_directory": "vendor-prefixed",
+			"namespace_prefix": "QBitFlowWC\\Vendor\\",
+			"classmap_prefix": "QBitFlowWC_Vendor_",
+			"constant_prefix": "QBITFLOW_WC_VENDOR_",
+			"packages": [
+				"qbitflow/qbitflow-php",
+				"nyholm/psr7"
+			],
+			"exclude_from_copy": {
+				"file_patterns": [
+					"#qbitflow/qbitflow-php/src/Laravel/#",
+					"#qbitflow/qbitflow-php/(vendor|config)/#",
+					"#qbitflow/qbitflow-php/[^/]+\\.(md|lock)$#",
+					"#qbitflow/qbitflow-php/\\.#"
+				]
+			},
+			"delete_vendor_packages": false,
+			"delete_vendor_files": false
+		}
+	},
+	"scripts": {
+		"prefix-namespaces": [
+			"@php -d memory_limit=1G vendor/bin/strauss --no-interaction"
+		],
+		"post-install-cmd": [
+			"@prefix-namespaces"
+		],
+		"post-update-cmd": [
+			"@prefix-namespaces"
+		],
+		"test:unit": "phpunit -c phpunit.xml.dist",
+		"test:integration": "npx --yes @wordpress/env run tests-cli --env-cwd=wp-content/plugins/qbitflow-for-woocommerce vendor/bin/phpunit -c phpunit-integration.xml.dist",
+		"release-check": [
+			"Composer\\Config::disableProcessTimeout",
+			"bin/release-check.sh"
+		]
+	},
+	"scripts-descriptions": {
+		"release-check": "The release gate: lint, unit, integration, build, ZIP checks and Plugin Check."
+	},
+	"minimum-stability": "stable",
+	"prefer-stable": true
+}

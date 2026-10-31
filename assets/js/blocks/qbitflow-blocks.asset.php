@@ -1,4 +1,6 @@
 <?php
+defined('ABSPATH') || exit;
+
 return array(
 	'dependencies' => array(
 		'wc-blocks-registry',
@@ -6,5 +8,5 @@ return array(
 		'wp-element',
 		'wp-html-entities',
 	),
-	'version' => '1.0.0',
+	'version' => '2.0.0-coins',
 );
